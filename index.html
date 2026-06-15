@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunstone Partners — 2026 Initiative Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── SUNSTONE COLOR SYSTEM ──────────────────────────────────────
+   Primary: Sunstone Orange  #E8500A / #F26522
+   Black:                    #1A1A1A
+   Dark gray:                #3A3A3A
+   Light gray bg:            #F6F4F2
+   White:                    #FFFFFF
+   Accent warm:              #FDF0E8
+   Greens (time alloc only): gradient scale
+──────────────────────────────────────────────────────────────── */
+:root{
+  /* Sunstone brand */
+  --orange:#E8500A; --orange2:#F26522; --orange-light:#FDF0E8; --orange-mid:#FCDEC8;
+  --ink:#1A1A1A; --ink2:#3A3A3A; --ink3:#6B6B6B; --ink4:#A8A8A8;
+  --bg:#F6F4F2; --surface:#FFFFFF; --surface2:#FAFAF9;
+  --border:#E2DDD8; --border2:#EDE9E5;
+  --red:#C0392B; --amber:#D97706; --blue:#1D4ED8;
+  /* time allocation gradient (green) */
+  --g0:#EBE9E5; --g1:#FCDEC8; --g2:#F9A87A; --g3:#F26522; --g4:#E8500A; --g5:#B33A00;
+  --r:8px; --sh:0 1px 3px rgba(0,0,0,0.08),0 1px 6px rgba(0,0,0,0.04);
+  --sh2:0 4px 16px rgba(0,0,0,0.10);
+  --fd:'Newsreader',Georgia,serif; --fb:'DM Sans',-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);min-height:100vh;}
+input,select,textarea,button{font-family:var(--fb);}
+
+/* ── TOP BAR ──────────────────────────────────────────────────── */
+.hd{background:#1A1A1A;color:#F0EDE8;padding:0 28px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.25);height:54px;gap:12px;}
+.hd-l{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+/* SVG logo: orange circle + SUNSTONE PARTNERS text */
+.logo-wrap{display:flex;align-items:center;gap:10px;}
+.logo-svg{width:36px;height:36px;flex-shrink:0;}
+.logo-text{display:flex;flex-direction:column;line-height:1.1;}
+.logo-text .lt1{font-family:var(--fd);font-size:16px;font-weight:700;letter-spacing:.02em;color:#F0EDE8;}
+.logo-text .lt2{font-size:9px;font-weight:600;letter-spacing:.18em;color:var(--orange2);text-transform:uppercase;}
+.hd-divider{width:1px;height:28px;background:#3A3A3A;margin:0 6px;}
+.hd-subtitle{font-size:15px;font-weight:700;color:#FFFFFF;white-space:nowrap;letter-spacing:.01em;font-family:var(--fd);}
+.hd-r{display:flex;gap:2px;align-items:center;}
+.tb{background:transparent;color:rgba(240,237,232,0.5);border:none;border-bottom:2px solid transparent;padding:0 14px;height:54px;cursor:pointer;font-size:12px;font-weight:500;font-family:var(--fb);transition:all .15s;white-space:nowrap;}
+.tb:hover{color:rgba(240,237,232,0.85);background:rgba(255,255,255,0.05);}
+.tb.on{color:#F0EDE8;border-bottom-color:var(--orange);font-weight:600;}
+.hd-date{font-size:11px;color:#555;margin-left:14px;white-space:nowrap;flex-shrink:0;}
+
+/* ── LAYOUT ──────────────────────────────────────────────────── */
+.ct{padding:22px 28px;max-width:1680px;margin:0 auto;}
+.section-hidden{display:none!important;}
+
+/* ── SECTION CARD ────────────────────────────────────────────── */
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:20px;overflow:hidden;}
+.card-hdr{padding:14px 20px;border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;background:var(--surface2);}
+.card-title{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--ink);}
+.card-sub{font-size:11px;color:var(--ink3);margin-top:2px;}
+.card-hdr-r{display:flex;gap:8px;align-items:center;}
+
+/* ── STATUS BADGES ───────────────────────────────────────────── */
+.badge{display:inline-block;border-radius:20px;padding:2px 10px;font-size:10px;font-weight:700;white-space:nowrap;letter-spacing:.02em;}
+.b-ns{background:#EDEBE8;color:#6B6B6B;}
+.b-ip{background:#E6F4D7;color:#2D7A10;}
+.b-oh{background:#FEF3C7;color:#92400E;}
+.b-co{background:#D1FAE5;color:#065F46;}
+.b-bl{background:#FEE2E2;color:#991B1B;}
+.b-ph{background:#EDE9FE;color:#6D28D9;}
+.b-tr{background:#E6F4D7;color:#2D7A10;}  /* On Track */
+.b-na{background:#EDEBE8;color:#6B6B6B;}  /* N/A / TBD */
+
+/* ── STATUS SELECT (styled to match badge colors) ────────────── */
+.st-sel{border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:11px;font-weight:600;background:#fff;cursor:pointer;color:var(--ink2);outline:none;transition:border-color .15s;}
+.st-sel:focus{border-color:var(--orange);}
+.st-sel.s-ip{background:#E6F4D7;color:#2D7A10;border-color:#8FC45A;}
+.st-sel.s-oh{background:#FEF3C7;color:#92400E;border-color:#FCD34D;}
+.st-sel.s-co{background:#D1FAE5;color:#065F46;border-color:#6EE7B7;}
+.st-sel.s-bl{background:#FEE2E2;color:#991B1B;border-color:#FCA5A5;}
+.st-sel.s-ns{background:#EDEBE8;color:#6B6B6B;}
+.st-sel.s-ph{background:#EDE9FE;color:#6D28D9;}
+
+/* ── PRIORITY BADGES ─────────────────────────────────────────── */
+.pri{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.pri-a{background:#FDF0E8;color:var(--orange);border:1px solid #FCDEC8;}
+.pri-b{background:#FFFBEB;color:var(--amber);border:1px solid #FDE68A;}
+.pri-c{background:#EDEBE8;color:#6B6B6B;border:1px solid var(--border);}
+
+/* ── PROG TABLE ──────────────────────────────────────────────── */
+.prog-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.prog-tbl th{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;padding:9px 12px;border-bottom:1px solid var(--border);background:var(--surface2);text-align:left;white-space:nowrap;}
+.prog-tbl td{padding:9px 12px;border-bottom:1px solid var(--border2);vertical-align:middle;}
+.prog-tbl tr:last-child td{border-bottom:none;}
+.prog-tbl tbody tr:hover td{background:#FAFAF8;}
+.section-row td{background:#44546A!important;color:#FFFFFF!important;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:7px 12px!important;border-bottom:none!important;}
+.total-row td{background:#1A1A1A!important;color:#F0EDE8!important;font-weight:700;font-size:11px;}
+/* avail-row handled inline */
+
+/* ── MONTH CELLS ─────────────────────────────────────────────── */
+.mc-th{width:48px;min-width:48px;text-align:center!important;padding:9px 2px!important;white-space:nowrap;font-size:10px;}
+.mc{width:48px;min-width:48px;text-align:center;padding:7px 2px!important;vertical-align:middle;}
+.mc-inner{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.mc-bar{width:36px;height:10px;border-radius:3px;transition:background .3s;}
+.mc-lbl{font-size:9px;font-weight:700;line-height:1;margin-top:1px;}
+/* Editable % input in Full Year */
+.mc-input{width:36px;border:1px solid var(--border);border-radius:4px;padding:2px 3px;font-size:10px;font-weight:700;text-align:center;outline:none;background:transparent;color:var(--ink2);}
+.mc-input:focus{border-color:var(--orange);background:#fff;}
+/* 6 gradient levels */
+.g-0{background:var(--g0);} .lc-0{color:transparent;}
+.g-1{background:var(--g1);} .lc-1{color:#C8400A;}
+.g-2{background:var(--g2);} .lc-2{color:#C8400A;}
+.g-3{background:var(--g3);} .lc-3{color:#B33A00;}
+.g-4{background:var(--g4);} .lc-4{color:#B33A00;}
+.g-5{background:var(--g5);} .lc-5{color:#B33A00;}
+
+/* ── PROG NAME / LINK ────────────────────────────────────────── */
+.prog-name{font-weight:600;color:var(--ink);}
+.prog-link{color:inherit;text-decoration:none;cursor:pointer;transition:color .15s;}
+.prog-link:hover{color:var(--orange);text-decoration:underline;}
+.prog-sub{font-size:10px;color:var(--ink3);margin-top:2px;}
+
+/* ── DASHBOARD KPI ROW ───────────────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
+.kpi{background:var(--surface);border-radius:var(--r);padding:16px 18px;border:1px solid var(--border);box-shadow:var(--sh);}
+.kpi-l{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:4px;}
+.kpi-v{font-family:var(--fd);font-size:28px;font-weight:700;line-height:1;}
+.kpi-s{font-size:10px;color:var(--ink4);margin-top:3px;}
+.kpi-bar{height:4px;background:var(--border2);border-radius:2px;margin-top:8px;overflow:hidden;}
+.kpi-fill{height:100%;border-radius:2px;transition:width .5s;}
+.kpi-orange{color:var(--orange);}
+.kpi-green{color:var(--orange);}
+.kpi-gray{color:var(--ink3);}
+
+/* ── DASH CHARTS ROW ─────────────────────────────────────────── */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:20px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.chart-card{background:var(--surface);padding:16px 18px;position:relative;}
+.chart-card:not(:last-child){border-right:1px solid var(--border2);}
+.chart-title{font-size:15px;font-weight:700;color:var(--ink);font-family:var(--fd);margin-bottom:14px;display:flex;align-items:baseline;gap:8px;letter-spacing:normal;text-transform:none;}
+.chart-sub{font-size:11px;color:var(--ink3);font-weight:400;font-family:var(--fb);}
+
+/* ── HORIZONTAL BAR CHART (replaces donuts) ─────────────────── */
+.hbar-chart{display:flex;flex-direction:column;gap:0;}
+.hbar-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0;padding:5px 0;border-bottom:1px solid var(--border2);}
+.hbar-row:last-child{border-bottom:none;}
+.hbar-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.hbar-label{font-size:10px;color:var(--ink2);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:8px;}
+.hbar-pct{font-size:10px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;flex-shrink:0;}
+.hbar-track{height:6px;background:var(--border2);border-radius:2px;overflow:hidden;width:100%;}
+.hbar-fill{height:100%;border-radius:2px;transition:width .45s cubic-bezier(.4,0,.2,1);}
+
+/* ── BANDWIDTH — same horizontal bar style ───────────────────── */
+/* ── VERTICAL BANDWIDTH BAR CHART (SVG-based, no height% bug) ── */
+.vbar-wrap{display:flex;flex-direction:column;gap:0;}
+.vbar-svg{display:block;width:100%;overflow:visible;}
+.bw-over-tag{display:inline-flex;align-items:center;gap:4px;margin-top:6px;background:#FEF2F2;border:1px solid #FECACA;border-radius:3px;padding:2px 7px;font-size:9px;font-weight:700;color:#991B1B;}
+
+/* ── FULL YEAR TABLE ─────────────────────────────────────────── */
+/* inline editable controls */
+.fy-name-input{border:none;background:transparent;font-size:12px;font-weight:600;color:var(--ink);width:100%;outline:none;padding:0;}
+.fy-name-input:focus{background:#FDF0E8;border-radius:3px;padding:1px 5px;}
+.fy-cat-sel,.fy-co-input,.fy-pri-sel{border:1px solid transparent;border-radius:5px;font-size:11px;background:transparent;color:var(--ink2);outline:none;padding:2px 4px;cursor:pointer;transition:border-color .15s;}
+.fy-cat-sel:hover,.fy-co-input:hover,.fy-pri-sel:hover{border-color:var(--border);}
+.fy-cat-sel:focus,.fy-co-input:focus,.fy-pri-sel:focus{border-color:var(--orange);background:#fff;}
+.add-row-btn{background:none;border:1px dashed var(--border);border-radius:6px;padding:6px 16px;font-size:11px;color:var(--ink3);cursor:pointer;font-family:var(--fb);transition:all .15s;margin:10px 12px;}
+.add-row-btn:hover{border-color:var(--orange);color:var(--orange);}
+.del-row-btn{background:none;border:none;cursor:pointer;color:var(--ink4);font-size:14px;padding:2px 4px;line-height:1;border-radius:4px;transition:color .15s;}
+.del-row-btn:hover{color:var(--red);}
+
+/* ── WORKPLAN PAGES ──────────────────────────────────────────── */
+.plan-head{margin-bottom:18px;}
+.plan-head h2{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--ink);}
+.plan-meta{font-size:12px;color:var(--ink3);margin-top:4px;display:flex;gap:16px;flex-wrap:wrap;}
+.plan-meta strong{color:var(--ink2);}
+.wip-banner{background:#FFF8F0;border:1px solid var(--orange-mid);border-left:3px solid var(--orange);border-radius:var(--r);padding:11px 16px;margin-bottom:18px;font-size:12px;color:#7A3010;}
+.wip-banner strong{color:var(--orange);}
+.plan-status-bar{display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:18px;flex-wrap:wrap;}
+.psb-label{font-size:12px;font-weight:600;color:var(--ink2);}
+.psb-last{font-size:11px;color:var(--ink3);}
+.summary-chips{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+.s-chip{flex:1 1 120px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);}
+.sc-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
+.sc-val{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--ink);margin-top:2px;}
+.sc-meta{font-size:10px;color:var(--ink3);margin-top:2px;}
+.plan-desc{background:var(--surface);border:1px solid var(--border2);border-left:3px solid var(--orange);border-radius:var(--r);padding:14px 18px;margin-bottom:18px;font-size:12px;line-height:1.75;color:var(--ink2);}
+.plan-desc strong{color:var(--ink);}
+
+/* Phase accordion */
+.phase-block{border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden;background:var(--surface);box-shadow:var(--sh);}
+.phase-hdr{padding:12px 18px;background:#44546A;border-bottom:1px solid #3A4A5E;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:12px;transition:background .15s;}
+.phase-hdr:hover{background:#3A4A5E;}
+.ph-badge{background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;white-space:nowrap;}
+.ph-title{font-family:var(--fd);font-size:14px;font-weight:700;color:#FFFFFF;flex:1;}
+.ph-meta{display:flex;align-items:center;gap:10px;}
+.ph-dates{font-size:10px;color:rgba(255,255,255,0.65);white-space:nowrap;}
+.ph-chev{font-size:16px;color:rgba(255,255,255,0.7);transition:transform .2s;}
+.ph-chev.open{transform:rotate(180deg);}
+
+/* Task table */
+.task-tbl{width:100%;border-collapse:collapse;}
+.task-tbl th{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;padding:7px 12px;border-bottom:1px solid var(--border);background:var(--surface2);text-align:left;white-space:nowrap;}
+.task-tbl td{padding:8px 12px;border-bottom:1px solid var(--border2);font-size:12px;vertical-align:middle;}
+.task-tbl tr:last-child td{border-bottom:none;}
+.task-tbl tr:hover td{background:#FAFAF8;}
+.t-num{font-size:10px;color:var(--ink3);font-weight:700;width:40px;white-space:nowrap;}
+.t-task{color:var(--ink);min-width:220px;}
+.t-sub{color:var(--ink2);}
+.t-milestone{background:#F6F4F2!important;font-style:italic;font-weight:600;font-size:11px;color:var(--ink)!important;}
+.t-owner-sel,.t-date-inp{border:1px solid transparent;border-radius:5px;font-size:11px;background:transparent;color:var(--ink2);outline:none;padding:3px 6px;cursor:pointer;font-family:var(--fb);transition:border-color .15s;min-width:80px;}
+.t-owner-sel:hover,.t-date-inp:hover{border-color:var(--border);}
+.t-owner-sel:focus,.t-date-inp:focus{border-color:var(--orange);background:#fff;}
+.t-date-wrap{display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.cal-icon{font-size:12px;color:var(--ink3);cursor:pointer;transition:color .15s;}
+.cal-icon:hover{color:var(--orange);}
+.t-dur{font-size:10px;color:var(--ink3);white-space:nowrap;}
+.t-output{font-size:11px;color:#1A6B5E;max-width:220px;}
+/* Task status badge styled like Full Year */
+.t-st-sel{border:1px solid var(--border);border-radius:6px;padding:3px 7px;font-size:10px;font-weight:700;cursor:pointer;outline:none;transition:all .15s;}
+.t-st-sel.ts-ns{background:#EDEBE8;color:#6B6B6B;border-color:#D5D1CB;}
+.t-st-sel.ts-ip{background:#E6F4D7;color:#2D7A10;border-color:#8FC45A;}
+.t-st-sel.ts-co{background:#D1FAE5;color:#065F46;border-color:#6EE7B7;}
+.t-st-sel.ts-oh{background:#FEF3C7;color:#92400E;border-color:#FCD34D;}
+.t-st-sel.ts-bl{background:#FEE2E2;color:#991B1B;border-color:#FCA5A5;}
+.t-st-sel.ts-tr{background:#E6F4D7;color:#2D7A10;border-color:#8FC45A;}
+
+/* ── SCORECARD ───────────────────────────────────────────────── */
+
+
+/* ── ACTIVITY LOG ────────────────────────────────────────────── */
+.log-section{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:14px 16px;margin-top:16px;}
+.log-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:10px;}
+.log-entry{font-size:12px;color:var(--ink2);padding:5px 0;border-bottom:1px solid var(--border2);display:flex;gap:10px;align-items:flex-start;}
+.log-entry:last-child{border-bottom:none;}
+.log-date{font-size:10px;color:var(--ink4);white-space:nowrap;flex-shrink:0;padding-top:1px;}
+.log-add{display:flex;gap:6px;margin-top:10px;}
+.log-input{flex:1;border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;outline:none;color:var(--ink);}
+.log-input:focus{border-color:var(--orange);}
+.log-btn{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;}
+
+/* ── SAVE INDICATOR ──────────────────────────────────────────── */
+.save-ind{position:fixed;bottom:20px;right:20px;background:#1A1A1A;color:#F0EDE8;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;display:flex;align-items:center;gap:6px;}
+.save-ind.show{opacity:1;}
+.save-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);}
+
+/* ── MISC ────────────────────────────────────────────────────── */
+.page-head{margin-bottom:18px;}
+.page-head h2{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--ink);}
+.page-head p{font-size:12px;color:var(--ink3);margin-top:3px;}
+.overflow-x{overflow-x:auto;}
+.legend-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:10px;color:var(--ink3);padding:8px 12px;background:var(--surface2);border-top:1px solid var(--border2);}
+.leg-item{display:flex;align-items:center;gap:4px;}
+.leg-dot{width:10px;height:10px;border-radius:2px;}
+
+@media(max-width:900px){.kpi-row{grid-template-columns:1fr 1fr 1fr;}.charts-row{grid-template-columns:1fr;}.ct{padding:14px 12px;}}
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ────────────────────────────────────────────────── -->
+<div class="hd">
+  <div class="hd-l">
+    <div class="logo-wrap">
+      <!-- Sunstone orange-circle SVG logo -->
+      <svg class="logo-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="44" cy="38" r="28" stroke="#E8500A" stroke-width="6" stroke-dasharray="8 4" stroke-linecap="round" opacity=".9"/>
+        <circle cx="44" cy="38" r="20" stroke="#F26522" stroke-width="3" stroke-dasharray="5 3" stroke-linecap="round" opacity=".5"/>
+      </svg>
+      <div class="logo-text"><span class="lt1">SUNSTONE</span><span class="lt2">PARTNERS</span></div>
+    </div>
+    <div class="hd-divider"></div>
+    <span class="hd-subtitle">Ryan Andre · 2026 Initiatives</span>
+  </div>
+  <div class="hd-r">
+    <button class="tb on" onclick="showTab('dashboard')">Dashboard</button>
+    <button class="tb" onclick="showTab('cost-out')">Cost Optimization</button>
+    <button class="tb" onclick="showTab('prime')">Prime Program</button>
+    <button class="tb" onclick="showTab('ai-close')">AI Close Challenge</button>
+    <button class="tb" onclick="showTab('budget')">2027 Budget</button>
+    <button class="tb" onclick="showTab('full-year')">Full Year</button>
+  </div>
+  <span class="hd-date" id="hd-date"></span>
+  <button onclick="exportSnapshot()" style="background:var(--orange);color:#fff;border:none;border-radius:6px;padding:0 16px;height:32px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">⬇ Save Snapshot</button>
+</div>
+
+<div class="ct">
+
+<!-- ══════════════════════════════════════════════════════════════
+  DASHBOARD TAB
+══════════════════════════════════════════════════════════════ -->
+<div id="tab-dashboard">
+  <div class="page-head">
+    <h2>Portfolio Operations Dashboard</h2>
+    <p>Auto-updates from Full Year tab · Last render: <span id="dash-last-render">—</span></p>
+  </div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-row" id="dash-kpis"><!-- JS --></div>
+
+  <!-- CHARTS ROW -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Time Allocation by Engagement Type</div>
+      <div style="display:flex;gap:16px;align-items:flex-start;">
+        <!-- Full Year donut -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <span style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;">Full Year 2026</span>
+          <div style="position:relative;width:100%;max-width:170px;">
+            <svg id="donut-fy-svg" style="display:block;width:100%;overflow:visible;" viewBox="0 0 170 170"></svg>
+            <div id="donut-fy-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;"></div>
+          </div>
+        </div>
+        <!-- Current month donut -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <span id="cur-mo-label" style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;">Current Month</span>
+          <div style="position:relative;width:100%;max-width:170px;">
+            <svg id="donut-cm-svg" style="display:block;width:100%;overflow:visible;" viewBox="0 0 170 170"></svg>
+            <div id="donut-cm-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Single shared legend -->
+      <div id="donut-shared-legend" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border2);"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Monthly Bandwidth <span class="chart-sub">% capacity used</span></div>
+      <div id="bw-chart"></div>
+    </div>
+  </div>
+
+  <!-- 2026 INITIATIVES — single unified card -->
+  <div class="card">
+    <div class="card-hdr" style="background:#1A1A1A;">
+      <div><div class="card-title" style="color:#FFFFFF;">2026 Initiatives</div></div>
+    </div>
+    <div class="overflow-x">
+      <table class="prog-tbl" id="dash-port-tbl">
+        <thead><tr>
+          <th style="width:26px;">#</th>
+          <th style="min-width:190px;">Project / Engagement</th>
+          <th style="min-width:100px;">Category</th>
+          <th style="min-width:90px;">Company</th>
+          <th style="width:52px;">Priority</th>
+          <th style="min-width:110px;">Status</th>
+          <th class="mc-th">Jan</th><th class="mc-th">Feb</th><th class="mc-th">Mar</th><th class="mc-th">Apr</th>
+          <th class="mc-th">May</th><th class="mc-th">Jun</th><th class="mc-th">Jul</th><th class="mc-th">Aug</th>
+          <th class="mc-th">Sep</th><th class="mc-th">Oct</th><th class="mc-th">Nov</th><th class="mc-th">Dec</th>
+          <th style="text-align:center;min-width:44px;">Avg</th>
+        </tr></thead>
+        <tbody id="dash-port-tbody"></tbody>
+      </table>
+    </div>
+    <div class="legend-row" id="dash-legend-row"></div>
+  </div>
+
+  <div class="log-section">
+    <div class="log-title">Dashboard Notes</div>
+    <div id="dash-log-list"></div>
+    <div class="log-add">
+      <input class="log-input" id="dash-log-input" placeholder="Add note…" onkeydown="if(event.key==='Enter')addLog('dash')">
+      <button class="log-btn" onclick="addLog('dash')">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+  FULL YEAR TAB (fully editable)
+══════════════════════════════════════════════════════════════ -->
+<div id="tab-full-year" class="section-hidden">
+  <div class="page-head">
+    <h2>2026 Full Year Work Plan</h2>
+    <p>Fully editable · Status changes auto-update Dashboard · Priority: <strong>A</strong> = Non-negotiable · <strong>B</strong> = Important/recurring · <strong>C</strong> = As capacity allows</p>
+  </div>
+  <div class="card">
+    <div class="card-hdr">
+      <div><div class="card-title">Full Year Overview</div><div class="card-sub">Click any cell to edit · % inputs update gradient bars automatically</div></div>
+    </div>
+    <div class="overflow-x">
+      <table class="prog-tbl" id="fy-tbl">
+        <thead><tr>
+          <th style="width:26px;">#</th>
+          <th style="min-width:200px;">Project / Engagement</th>
+          <th style="min-width:110px;">Category</th>
+          <th style="min-width:85px;">Company</th>
+          <th style="width:52px;">Priority</th>
+          <th style="min-width:110px;">Status</th>
+          <th class="mc-th">Jan</th><th class="mc-th">Feb</th><th class="mc-th">Mar</th><th class="mc-th">Apr</th>
+          <th class="mc-th">May</th><th class="mc-th">Jun</th><th class="mc-th">Jul</th><th class="mc-th">Aug</th>
+          <th class="mc-th">Sep</th><th class="mc-th">Oct</th><th class="mc-th">Nov</th><th class="mc-th">Dec</th>
+          <th style="text-align:center;min-width:44px;">Avg</th>
+          <th style="width:24px;"></th>
+        </tr></thead>
+        <tbody id="fy-tbody"></tbody>
+      </table>
+    </div>
+    <div id="fy-add-btns"></div>
+    <div class="legend-row">
+      <span style="font-weight:600;color:var(--ink2);">Gradient key:</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--g1)"></span>1–9%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--g2)"></span>10–19%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--g3)"></span>20–29%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--g4)"></span>30–39%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--g5)"></span>40%+</span>
+    </div>
+  </div>
+  <div class="log-section">
+    <div class="log-title">Notes & Activity Log</div>
+    <div id="fy-log-list"></div>
+    <div class="log-add">
+      <input class="log-input" id="fy-log-input" placeholder="Add note…" onkeydown="if(event.key==='Enter')addLog('fy')">
+      <button class="log-btn" onclick="addLog('fy')">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+  COST OPTIMIZATION TAB
+══════════════════════════════════════════════════════════════ -->
+<div id="tab-cost-out" class="section-hidden">
+  <div class="plan-head">
+    <h2>Portfolio Cost Optimization Work Plan</h2>
+    <div class="plan-meta">
+      <span><strong>PM:</strong> Ryan Andre</span>
+      <span><strong>Start:</strong> Feb 23, 2026</span>
+      <span><strong>End:</strong> Oct 22, 2026</span>
+      <span><strong>Duration:</strong> ~8 months</span>
+    </div>
+  </div>
+  <div class="plan-status-bar">
+    <span class="psb-label">Program Status (syncs to Dashboard & Full Year):</span>
+    <select class="st-sel" id="cost-status-sel" onchange="syncProgStatus('cost-out',this.value);styleStatusSel(this)">
+      <option>Not Started</option><option selected>In Progress</option><option>On Hold</option><option>Complete</option><option>Blocked</option>
+    </select>
+    <span class="psb-last">Last updated: <span id="cost-last-upd">—</span></span>
+  </div>
+  <div id="cost-phase-container"><!-- phases injected by JS --></div>
+  <div class="log-section"><div class="log-title">Notes & Activity Log</div><div id="cost-log-list"></div><div class="log-add"><input class="log-input" id="cost-log-input" placeholder="Add note…" onkeydown="if(event.key==='Enter')addLog('cost')"><button class="log-btn" onclick="addLog('cost')">Add</button></div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+  PRIME PROGRAM TAB
+══════════════════════════════════════════════════════════════ -->
+<div id="tab-prime" class="section-hidden">
+  <div class="plan-head">
+    <h2>Sunstone Prime Program Work Plan</h2>
+    <div class="plan-meta"><span><strong>PM:</strong> Ryan Andre</span><span><strong>Start:</strong> Mar 16, 2026</span><span><strong>Duration:</strong> ~13 Weeks</span></div>
+  </div>
+  <div class="plan-status-bar">
+    <span class="psb-label">Program Status:</span>
+    <select class="st-sel" id="prime-status-sel" onchange="syncProgStatus('prime',this.value);styleStatusSel(this)">
+      <option>Not Started</option><option selected>In Progress</option><option>On Hold</option><option>Complete</option><option>Blocked</option>
+    </select>
+    <span class="psb-last">Last updated: <span id="prime-last-upd">—</span></span>
+  </div>
+  <div id="prime-phase-container"></div>
+  <div class="log-section"><div class="log-title">Notes & Activity Log</div><div id="prime-log-list"></div><div class="log-add"><input class="log-input" id="prime-log-input" placeholder="Add note…" onkeydown="if(event.key==='Enter')addLog('prime')"><button class="log-btn" onclick="addLog('prime')">Add</button></div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+  AI CLOSE CHALLENGE TAB
+══════════════════════════════════════════════════════════════ -->
+<div id="tab-ai-close" class="section-hidden">
+  <div class="plan-head">
+    <h2>AI Close Acceleration Challenge</h2>
+    <div class="plan-meta"><span><strong>PM:</strong> Ryan Andre</span><span><strong>Target Start:</strong> Jun 2026</span><span><strong>Category:</strong> Finance Modernization</span><span><strong>Priority:</strong> A</span></div>
+  </div>
+  <div class="plan-status-bar">
+    <span class="psb-label">Program Status:</span>
+    <select class="st-sel" id="ai-status-sel" onchange="syncProgStatus('ai-close',this.value);styleStatusSel(this)">
+      <option selected>Not Started</option><option>In Progress</option><option>On Hold</option><option>Complete</option><option>Blocked</option>
+    </select>
+    <span class="psb-last">Last updated: <span id="ai-last-upd">—</span></span>
+  </div>
+  <div class="wip-banner">⚠️ <strong>Work in Progress</strong> — Placeholder workplan. Phases and timelines are illustrative and will be refined as the initiative scopes out.</div>
+  <div id="ai-phase-container"></div>
+  <div class="log-section"><div class="log-title">Notes & Activity Log</div><div id="ai-log-list"></div><div class="log-add"><input class="log-input" id="ai-log-input" placeholder="Add note…" onkeydown="if(event.key==='Enter')addLog('ai')"><button class="log-btn" onclick="addLog('ai')">Add</button></div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+  2027 BUDGET TAB
+══════════════════════════════════════════════════════════════ -->
+<div id="tab-budget" class="section-hidden">
+  <div class="plan-head">
+    <h2>2027 Budget Process Work Plan</h2>
+    <div class="plan-meta"><span><strong>PM:</strong> Ryan Andre</span><span><strong>Target Start:</strong> Sep 2026</span><span><strong>Category:</strong> Performance Monitoring</span><span><strong>Priority:</strong> A</span></div>
+  </div>
+  <div class="plan-status-bar">
+    <span class="psb-label">Program Status:</span>
+    <select class="st-sel" id="budget-status-sel" onchange="syncProgStatus('budget',this.value);styleStatusSel(this)">
+      <option selected>Not Started</option><option>In Progress</option><option>On Hold</option><option>Complete</option><option>Blocked</option>
+    </select>
+    <span class="psb-last">Last updated: <span id="budget-last-upd">—</span></span>
+  </div>
+  <div class="wip-banner">⚠️ <strong>Work in Progress</strong> — Placeholder built to match prior-year budget process. Will be finalized as we approach the Sep–Nov 2026 cycle.</div>
+  <div id="budget-phase-container"></div>
+  <div class="log-section"><div class="log-title">Notes & Activity Log</div><div id="budget-log-list"></div><div class="log-add"><input class="log-input" id="budget-log-input" placeholder="Add note…" onkeydown="if(event.key==='Enter')addLog('budget')"><button class="log-btn" onclick="addLog('budget')">Add</button></div></div>
+</div>
+
+</div><!-- /ct -->
+<div class="save-ind" id="save-ind"><div class="save-dot"></div>Saved</div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════════
+const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const CATS = ['Cost Optimization & M&A Integration','Finance Modernization','Performance Monitoring','Post-Close Onboarding','Sunstone Portfolio Reporting','Other Internal'];
+const OWNERS = ['RA','SL','RA/SL','RA/Partner','RA/AGMAJ','PortCo CFO','TBD'];
+const STATUS_OPTS = ['Not Started','In Progress','On Hold','Complete','Blocked','Placeholder'];
+
+// ═══════════════════════════════════════════════════════════════
+// DATA — Portfolio programs (editable via Full Year)
+// ═══════════════════════════════════════════════════════════════
+const portfolioPrograms = [
+  {id:'cost-out',num:1,name:'Sunstone Edge Program (Cost Out)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Visibility',alloc:[0,0.05,0.3,0.4,0.35,0.3,0.3,0.2,0.15,0.1,0,0],tab:'cost-out'},
+  {id:'prime',num:2,name:'Sunstone Prime Program (Preferred Vendors)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Reduced Deal Team Time',alloc:[0,0,0.1,0.15,0.15,0.1,0,0,0,0,0,0],tab:'prime'},
+  {id:'ai-close',num:3,name:'AI Close Acceleration Challenge',cat:'Finance Modernization',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Exit Readiness, Margin Expansion',alloc:[0,0,0,0,0.05,0.15,0.1,0.1,0.05,0,0,0],tab:'ai-close'},
+  {id:'budget',num:4,name:'2027 Budget Process',cat:'Performance Monitoring',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Risk Management, Exit Readiness',alloc:[0,0,0,0,0,0,0,0,0.3,0.2,0.2,0.2],tab:'budget'},
+];
+
+// ═══════════════════════════════════════════════════════════════
+// DATA — Other rows (editable via Full Year)
+// ═══════════════════════════════════════════════════════════════
+let otherRows = [
+  {section:'PORTCO ENGAGEMENTS'},
+  {id:'r5',num:5,name:'NetSuite Implementation',cat:'Finance Modernization',co:'TelliHealth',pri:'A',status:'On Hold',alloc:[0.4,0.3,0.1,0.05,0.2,0.2,0.1,0,0,0,0,0]},
+  {id:'r6',num:6,name:'Back Office Staffing (Controller + 2 junior)',cat:'Post-Close Onboarding',co:'TelliHealth',pri:'C',status:'In Progress',alloc:[0,0.1,0.1,0.05,0,0,0,0,0,0,0,0]},
+  {id:'r7',num:7,name:'Monthly Reporting Standup',cat:'Post-Close Onboarding',co:'Clearwater',pri:'A',status:'In Progress',alloc:[0.05,0.05,0.05,0,0,0,0,0,0,0,0,0]},
+  {id:'r8',num:8,name:'Post-Close Onboarding: Peloton',cat:'Post-Close Onboarding',co:'Peloton',pri:'A',status:'Placeholder',alloc:[0,0,0,0.2,0.2,0.2,0,0,0,0,0,0]},
+  {id:'r9',num:9,name:'Post-Close Onboarding: Placeholder',cat:'Post-Close Onboarding',co:'TBD',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0,0.2,0.2,0.2,0.2,0.2,0.2]},
+  {section:'RECURRING INTERNAL WORK'},
+  {id:'r10',num:10,name:'Portfolio Data Ingestion & Benchmarking',cat:'Sunstone Portfolio Reporting',co:'Internal',pri:'B',status:'In Progress',alloc:[0.15,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]},
+  {id:'r11',num:11,name:'Ad-Hoc Benchmarking & Analysis',cat:'Sunstone Portfolio Reporting',co:'Internal',pri:'A',status:'Placeholder',alloc:[0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05]},
+  {section:'OTHER'},
+  {id:'r12',num:12,name:'POG / FinOps Collateral & Capability Slides',cat:'Other Internal',co:'Internal',pri:'B',status:'In Progress',alloc:[0.2,0.2,0.15,0.1,0,0,0,0,0,0,0,0]},
+];
+
+let logs = {dash:[],fy:[],cost:[],prime:[],ai:[],budget:[]};
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function gLevel(v){ return v===0?0:v<0.1?1:v<0.2?2:v<0.3?3:v<0.4?4:5; }
+
+function mcReadCell(v, mo){
+  const lv = gLevel(v); const pct = Math.round(v*100);
+  const lbl = pct>0 ? pct+'%' : '<span style="color:var(--border2);font-size:8px;">—</span>';
+  return `<td class="mc" title="${mo}: ${pct}%"><div class="mc-inner"><div class="mc-bar g-${lv}"></div><span class="mc-lbl lc-${lv}">${lbl}</span></div></td>`;
+}
+
+function mcEditCell(rowId, idx, v){
+  const lv = gLevel(v); const pct = Math.round(v*100);
+  return `<td class="mc"><div class="mc-inner">
+    <div class="mc-bar g-${lv}" id="mcbar-${rowId}-${idx}"></div>
+    <input class="mc-input lc-${lv}" id="mci-${rowId}-${idx}" value="${pct>0?pct:''}" placeholder="0"
+      onchange="updateAlloc('${rowId}',${idx},this.value)"
+      style="color:${lv>=3?'#B33A00':lv>=1?'#C8400A':'var(--ink3)'}">
+  </div></td>`;
+}
+
+function updateAlloc(rowId, idx, val){
+  const v = Math.min(Math.max(parseFloat(val)||0,0),100)/100;
+  // find in portfolio or other
+  let row = portfolioPrograms.find(p=>p.id===rowId) || otherRows.find(r=>r.id===rowId);
+  if(row){ row.alloc[idx]=v; }
+  // update bar color
+  const lv = gLevel(v);
+  const bar = document.getElementById(`mcbar-${rowId}-${idx}`);
+  const inp = document.getElementById(`mci-${rowId}-${idx}`);
+  if(bar){ bar.className=`mc-bar g-${lv}`; }
+  if(inp){ inp.className=`mc-input lc-${lv}`; inp.style.color=lv>=3?'#B33A00':lv>=1?'#C8400A':'var(--ink3)'; }
+  // refresh avg
+  updateFYAvg(rowId);
+  renderDashboard();
+  showSaved();
+}
+
+function updateFYAvg(rowId){
+  const row = portfolioPrograms.find(p=>p.id===rowId) || otherRows.find(r=>r.id===rowId);
+  if(!row||row.section) return;
+  const avg = row.alloc.reduce((a,b)=>a+b,0)/12;
+  const el = document.getElementById(`fy-avg-${rowId}`);
+  if(el) el.textContent = avg>0?Math.round(avg*100)+'%':'—';
+}
+
+function statusBadge(s){
+  const map={'Not Started':'b-ns','In Progress':'b-ip','On Hold':'b-oh','Complete':'b-co','Blocked':'b-bl','Placeholder':'b-ph','On Track':'b-tr','n/a':'b-na','TBD':'b-na'};
+  return `<span class="badge ${map[s]||'b-ns'}">${s||'Not Started'}</span>`;
+}
+
+function priBadge(p){
+  return `<span style="font-size:11px;">${p||'C'}</span>`;
+}
+
+function styleStatusSel(sel){
+  sel.className = 'st-sel';
+  const v = sel.value;
+  if(v==='In Progress') sel.classList.add('s-ip');
+  else if(v==='On Hold') sel.classList.add('s-oh');
+  else if(v==='Complete') sel.classList.add('s-co');
+  else if(v==='Blocked') sel.classList.add('s-bl');
+  else if(v==='Placeholder') sel.classList.add('s-ph');
+  else sel.classList.add('s-ns');
+}
+
+function styledStatusSel(id, val, onchange, cls='st-sel'){
+  const opts = STATUS_OPTS.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('');
+  return `<select class="${cls}" onchange="${onchange}" id="${id}">${opts}</select>`;
+}
+
+function nowStr(){ return new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function showSaved(){ const el=document.getElementById('save-ind'); el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1800); }
+
+function computeTotals(){
+  return Array.from({length:12},(_,i)=>{
+    let t = portfolioPrograms.reduce((a,p)=>a+(p.alloc[i]||0),0);
+    otherRows.filter(r=>!r.section).forEach(r=>{ t+=(r.alloc[i]||0); });
+    return t;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROG STATUS SYNC (workplan ↔ Full Year ↔ Dashboard)
+// ═══════════════════════════════════════════════════════════════
+function syncProgStatus(id, val){
+  const p = portfolioPrograms.find(x=>x.id===id);
+  if(p){ p.status=val; }
+  // sync sibling selects
+  const selIds={'cost-out':'cost-status-sel','prime':'prime-status-sel','ai-close':'ai-status-sel','budget':'budget-status-sel'};
+  Object.entries(selIds).forEach(([k,sid])=>{ if(k===id){ const el=document.getElementById(sid); if(el){el.value=val;styleStatusSel(el);} }});
+  // update last upd
+  const updEl = document.getElementById(id.split('-')[0]+'-last-upd')||document.getElementById(id.replace('-close','').replace('-out','')+'-last-upd');
+  const allUpd=['cost-last-upd','prime-last-upd','ai-last-upd','budget-last-upd'];
+  allUpd.forEach(uid=>{
+    if(uid.startsWith(id.split('-')[0])||uid.startsWith(id.replace('-out','').replace('-close',''))){
+      const e=document.getElementById(uid); if(e) e.textContent=nowStr();
+    }
+  });
+  renderFY();
+  renderDashboard();
+  showSaved();
+}
+
+function onDashStatusChange(id, val){
+  syncProgStatus(id, val);
+  // re-style the select that triggered
+  const sel = document.querySelector(`select[onchange*="'${id}'"]`);
+  if(sel) styleStatusSel(sel);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FULL YEAR TABLE
+// ═══════════════════════════════════════════════════════════════
+function renderFY(){
+  const tbody = document.getElementById('fy-tbody');
+  if(!tbody) return;
+  tbody.innerHTML='';
+
+  // --- Portfolio-wide section ---
+  tbody.innerHTML += `<tr class="section-row"><td colspan="21">PORTFOLIO-WIDE PROGRAMS</td></tr>`;
+  portfolioPrograms.forEach(p=>{
+    const avg=p.alloc.reduce((a,b)=>a+b,0)/12;
+    const moCells = MO.map((_,i)=>mcEditCell(p.id,i,p.alloc[i])).join('');
+    const catOpts = CATS.map(c=>`<option${c===p.cat?' selected':''}>${c}</option>`).join('');
+    tbody.innerHTML += `<tr>
+      <td style="font-size:11px;font-weight:700;color:var(--ink3);">${p.num}</td>
+      <td class="prog-name"><a class="prog-link" onclick="showTab('${p.tab}')">${p.name}</a><div class="prog-sub">${p.drivers}</div></td>
+      <td><select class="fy-cat-sel" onchange="updateField('portf','${p.id}','cat',this.value)">${catOpts}</select></td>
+      <td><input class="fy-co-input" value="${p.co}" onchange="updateField('portf','${p.id}','co',this.value)" style="width:80px;"></td>
+      <td><select class="fy-pri-sel" onchange="updateField('portf','${p.id}','pri',this.value)">
+        ${['A','B','C'].map(x=>`<option${x===p.pri?' selected':''}>${x}</option>`).join('')}
+      </select></td>
+      <td><select class="st-sel s-${statusCls(p.status)}" onchange="syncProgStatus('${p.id}',this.value);styleStatusSel(this)">
+        ${STATUS_OPTS.map(o=>`<option${o===p.status?' selected':''}>${o}</option>`).join('')}
+      </select></td>
+      ${moCells}
+      <td style="text-align:center;font-size:11px;font-weight:700;color:var(--ink2);" id="fy-avg-${p.id}">${avg>0?Math.round(avg*100)+'%':'—'}</td>
+      <td></td>
+    </tr>`;
+  });
+
+  // --- Other rows ---
+  let currentSection = null;
+  let sectionIdx = 0;
+  otherRows.forEach((item,ri)=>{
+    if(item.section){
+      currentSection = item.section;
+      sectionIdx = ri;
+      tbody.innerHTML += `<tr class="section-row"><td colspan="21">${item.section}</td></tr>`;
+      return;
+    }
+    const avg=item.alloc.reduce((a,b)=>a+b,0)/12;
+    const moCells = MO.map((_,i)=>mcEditCell(item.id,i,item.alloc[i])).join('');
+    const catOpts = CATS.map(c=>`<option${c===item.cat?' selected':''}>${c}</option>`).join('');
+    const stCls = statusCls(item.status);
+    tbody.innerHTML += `<tr id="row-${item.id}">
+      <td style="font-size:11px;font-weight:700;color:var(--ink3);">${item.num}</td>
+      <td class="prog-name"><input class="fy-name-input" value="${item.name}" onchange="updateField('other','${item.id}','name',this.value)"></td>
+      <td><select class="fy-cat-sel" onchange="updateField('other','${item.id}','cat',this.value)">${catOpts}</select></td>
+      <td><input class="fy-co-input" value="${item.co}" onchange="updateField('other','${item.id}','co',this.value)" style="width:80px;"></td>
+      <td><select class="fy-pri-sel" onchange="updateField('other','${item.id}','pri',this.value)">
+        ${['A','B','C'].map(x=>`<option${x===item.pri?' selected':''}>${x}</option>`).join('')}
+      </select></td>
+      <td><select class="st-sel s-${stCls}" onchange="updateField('other','${item.id}','status',this.value);styleStatusSel(this)">
+        ${STATUS_OPTS.map(o=>`<option${o===item.status?' selected':''}>${o}</option>`).join('')}
+      </select></td>
+      ${moCells}
+      <td style="text-align:center;font-size:11px;font-weight:700;color:var(--ink2);" id="fy-avg-${item.id}">${avg>0?Math.round(avg*100)+'%':'—'}</td>
+      <td><button class="del-row-btn" onclick="deleteOtherRow('${item.id}')" title="Remove row">✕</button></td>
+    </tr>`;
+  });
+
+  // Totals
+  const tot = computeTotals();
+  const totAvg = tot.reduce((a,b)=>a+b,0)/12;
+  const totCells = tot.map(v=>{const pct=Math.round(v*100);const col=v>1?'#FF6B6B':v>0.85?'#F59E0B':'#FCDEC8';return`<td style="text-align:center;font-size:10px;font-weight:700;color:${col};padding:8px 2px;">${pct}%</td>`;}).join('');
+  tbody.innerHTML += `<tr><td colspan="21" style="height:10px;background:#F6F4F2;border-top:2px solid #44546A;padding:0;"></td></tr>`;
+  tbody.innerHTML += `<tr class="total-row"><td colspan="6" style="padding:10px 12px;letter-spacing:.06em;">TOTAL TIME ALLOCATION</td>${totCells}<td style="text-align:center;font-size:11px;font-weight:700;color:#FCDEC8;">${Math.round(totAvg*100)}%</td><td></td></tr>`;
+  const avCells = tot.map(v=>{const r=Math.round((1-v)*100);const col=r<0?'#FF6B6B':r<15?'#F59E0B':'#888';return`<td style="text-align:center;font-size:10px;color:${col};padding:7px 2px;">${r}%</td>`;}).join('');
+  tbody.innerHTML += `<tr class="avail-row"><td colspan="6" style="padding:7px 12px;letter-spacing:.06em;">AVAILABLE CAPACITY</td>${avCells}<td style="text-align:center;font-size:11px;color:#888;">${Math.round((1-totAvg)*100)}%</td><td></td></tr>`;
+
+  // Add-row buttons
+  const addWrap = document.getElementById('fy-add-btns');
+  if(addWrap){
+    const sections = ['PORTCO ENGAGEMENTS','RECURRING INTERNAL WORK','OTHER'];
+    addWrap.innerHTML = sections.map(s=>`<button class="add-row-btn" onclick="addOtherRow('${s}')">+ Add row to ${s}</button>`).join('');
+  }
+  // style all status selects
+  document.querySelectorAll('#fy-tbody .st-sel').forEach(styleStatusSel);
+}
+
+function statusCls(s){
+  if(s==='In Progress') return 'ip';
+  if(s==='On Hold') return 'oh';
+  if(s==='Complete') return 'co';
+  if(s==='Blocked') return 'bl';
+  if(s==='Placeholder') return 'ph';
+  return 'ns';
+}
+
+function updateField(type, id, field, val){
+  if(type==='portf'){
+    const p=portfolioPrograms.find(x=>x.id===id); if(p) p[field]=val;
+  } else {
+    const r=otherRows.find(x=>x.id===id); if(r) r[field]=val;
+  }
+  renderDashboard();
+  showSaved();
+}
+
+function addOtherRow(section){
+  // Find the last item in this section
+  const newId = 'r'+Date.now();
+  let insertIdx = -1;
+  for(let i=otherRows.length-1;i>=0;i--){
+    if(!otherRows[i].section && otherRows[i-1] && (otherRows[i-1].section===section||insertIdx>-1)){insertIdx=i+1;break;}
+    if(otherRows[i].section===section){insertIdx=i+1;break;}
+  }
+  if(insertIdx===-1) insertIdx=otherRows.length;
+  // find max num
+  const maxNum = Math.max(...otherRows.filter(r=>!r.section&&r.num).map(r=>r.num),12);
+  const newRow={id:newId,num:maxNum+1,name:'New Initiative',cat:CATS[0],co:'TBD',pri:'A',status:'Not Started',alloc:Array(12).fill(0)};
+  otherRows.splice(insertIdx,0,newRow);
+  renderFY();
+  showSaved();
+}
+
+function deleteOtherRow(id){
+  if(!confirm('Remove this row?')) return;
+  otherRows = otherRows.filter(r=>r.id!==id);
+  renderFY();
+  renderDashboard();
+  showSaved();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+function renderDashboard(){
+  const now = new Date();
+  const el = document.getElementById('dash-last-render');
+  if(el) el.textContent = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  // --- KPIs ---
+  const allRows = [...portfolioPrograms, ...otherRows.filter(r=>!r.section)];
+  const activeRows = allRows.filter(r=>r.status!=='Placeholder');
+  const total = activeRows.length;
+  const ip = activeRows.filter(r=>r.status==='In Progress').length;
+  const co = activeRows.filter(r=>r.status==='Complete').length;
+  const ns = activeRows.filter(r=>r.status==='Not Started').length;
+  const oh = activeRows.filter(r=>r.status==='On Hold').length;
+  const tot = computeTotals();
+  const curMonth = new Date().getMonth();
+  const curBW = Math.round(tot[curMonth]*100);
+  const kpiEl = document.getElementById('dash-kpis');
+  if(kpiEl) kpiEl.innerHTML = `
+    <div class="kpi"><div class="kpi-l">Active Initiatives</div><div class="kpi-v">${total}</div><div class="kpi-s">excl. placeholders</div></div>
+    <div class="kpi"><div class="kpi-l">In Progress</div><div class="kpi-v kpi-green">${ip}</div><div class="kpi-s">of ${total} initiatives</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(ip/Math.max(total,1)*100)}%;background:var(--g3);"></div></div></div>
+    <div class="kpi"><div class="kpi-l">Not Started</div><div class="kpi-v kpi-gray">${ns}</div><div class="kpi-s">of ${total} initiatives</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(ns/Math.max(total,1)*100)}%;background:#A8A8A8;"></div></div></div>
+    <div class="kpi"><div class="kpi-l">On Hold</div><div class="kpi-v" style="color:var(--amber);">${oh}</div><div class="kpi-s">of ${total} initiatives</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.round(oh/Math.max(total,1)*100)}%;background:var(--amber);"></div></div></div>
+    <div class="kpi"><div class="kpi-l">${MO[curMonth]} Bandwidth</div><div class="kpi-v" style="color:${curBW>85?'var(--red)':curBW>65?'var(--amber)':'var(--ink)'}">${curBW}%</div><div class="kpi-s">allocated this month</div><div class="kpi-bar"><div class="kpi-fill" style="width:${Math.min(curBW,100)}%;background:${curBW>85?'var(--red)':curBW>65?'var(--amber)':'var(--g3)'};"></div></div></div>`;
+
+  // --- Pie: by category ---
+  renderPieType();
+  renderPieStatus(activeRows);
+  renderBWChart(tot);
+
+  // --- Single unified initiatives table ---
+  const ptbody = document.getElementById('dash-port-tbody');
+  if(ptbody){
+    ptbody.innerHTML='';
+
+    // Portfolio-Wide section header row
+    ptbody.innerHTML+=`<tr class="section-row"><td colspan="19">PORTFOLIO-WIDE PROGRAMS <span style="font-size:9px;font-weight:400;color:rgba(255,255,255,0.65);text-transform:none;letter-spacing:.02em;margin-left:10px;">Status syncs to/from individual workplans · Click name to open</span></td></tr>`;
+
+    // Portfolio-Wide rows
+    portfolioPrograms.forEach(p=>{
+      const avg=p.alloc.reduce((a,b)=>a+b,0)/12;
+      const moCells=MO.map((m,i)=>mcReadCell(p.alloc[i],m)).join('');
+      ptbody.innerHTML+=`<tr>
+        <td style="font-size:11px;font-weight:700;color:var(--ink3);">${p.num}</td>
+        <td class="prog-name"><a class="prog-link" onclick="showTab('${p.tab}')">${p.name}</a><div class="prog-sub">${p.drivers}</div></td>
+        <td style="font-size:11px;color:var(--ink3);">${p.cat}</td>
+        <td style="font-size:11px;">${p.co}</td>
+        <td>${priBadge(p.pri)}</td>
+        <td><select class="st-sel" onchange="onDashStatusChange('${p.id}',this.value);styleStatusSel(this)">
+          ${STATUS_OPTS.map(o=>`<option${o===p.status?' selected':''}>${o}</option>`).join('')}
+        </select></td>
+        ${moCells}
+        <td style="text-align:center;font-size:11px;font-weight:700;color:var(--ink2);">${avg>0?Math.round(avg*100)+'%':'—'}</td>
+      </tr>`;
+    });
+    document.querySelectorAll('#dash-port-tbody .st-sel').forEach(styleStatusSel);
+
+    // Other rows (Portco Engagements, Recurring Internal, Other)
+    otherRows.forEach(item=>{
+      if(item.section){ ptbody.innerHTML+=`<tr class="section-row"><td colspan="19">${item.section}</td></tr>`; return; }
+      const avg=item.alloc.reduce((a,b)=>a+b,0)/12;
+      const moCells=MO.map((m,i)=>mcReadCell(item.alloc[i],m)).join('');
+      ptbody.innerHTML+=`<tr>
+        <td style="font-size:11px;font-weight:700;color:var(--ink3);">${item.num}</td>
+        <td class="prog-name">${item.name}</td>
+        <td style="font-size:11px;color:var(--ink3);">${item.cat}</td>
+        <td style="font-size:11px;">${item.co}</td>
+        <td>${priBadge(item.pri)}</td>
+        <td>${statusBadge(item.status)}</td>
+        ${moCells}
+        <td style="text-align:center;font-size:11px;font-weight:700;color:var(--ink2);">${avg>0?Math.round(avg*100)+'%':'—'}</td>
+      </tr>`;
+    });
+
+    // Spacer + Grand total + Available capacity
+    const grand=computeTotals();
+    const grandAvg=grand.reduce((a,b)=>a+b,0)/12;
+    ptbody.innerHTML+=`<tr><td colspan="19" style="height:10px;background:#F6F4F2;border-top:2px solid #44546A;padding:0;"></td></tr>`;
+    ptbody.innerHTML+=`<tr class="total-row"><td colspan="6" style="padding:10px 12px;font-size:11px;letter-spacing:.06em;">TOTAL TIME ALLOCATION</td>${grand.map(v=>{const p=Math.round(v*100);const cv=v>1?'#FF6B6B':v>0.85?'#F59E0B':'#FCDEC8';return`<td style="text-align:center;font-size:10px;font-weight:700;color:${cv};padding:8px 2px;">${p}%</td>`;}).join('')}<td style="text-align:center;font-weight:700;font-size:11px;color:#FCDEC8;">${Math.round(grandAvg*100)}%</td></tr>`;
+    ptbody.innerHTML+=`<tr style="background:#ffffff;"><td colspan="6" style="padding:8px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;color:#1A1A1A;text-transform:uppercase;">AVAILABLE CAPACITY</td>${grand.map(v=>{const r=Math.round((1-v)*100);const col=r<0?'#C0392B':r===0?'#1A1A1A':'#2D7A10';return`<td style="text-align:center;font-size:10px;font-weight:700;color:${col};padding:8px 2px;">${r>0?'+':''}${r}%</td>`;}).join('')}<td style="text-align:center;font-size:11px;font-weight:700;color:${Math.round((1-grandAvg)*100)<0?'#C0392B':Math.round((1-grandAvg)*100)===0?'#1A1A1A':'#2D7A10'};">${Math.round((1-grandAvg)*100)>0?'+':''}${Math.round((1-grandAvg)*100)}%</td></tr>`;
+  }
+
+  // Legend
+  const legendEl=document.getElementById('dash-legend-row');
+  if(legendEl) legendEl.innerHTML=`<span style="font-weight:600;color:var(--ink2);">Gradient key:</span><span class="leg-item"><span class="leg-dot" style="background:var(--g1)"></span>1–9%</span><span class="leg-item"><span class="leg-dot" style="background:var(--g2)"></span>10–19%</span><span class="leg-item"><span class="leg-dot" style="background:var(--g3)"></span>20–29%</span><span class="leg-item"><span class="leg-dot" style="background:var(--g4)"></span>30–39%</span><span class="leg-item"><span class="leg-dot" style="background:var(--g5)"></span>40%+</span>`;
+}
+
+// ── Pie chart helpers ──────────────────────────────────────────
+// ── Sunstone bar chart palette ─────────────────────────────────
+// Primary orange fading through warm grays — clean, on-brand
+const BAR_PALETTE=['#E8500A','#F26522','#C8400A','#1A1A1A','#3A3A3A','#6B6B6B','#A8A8A8','#D0CBC4'];
+const TYPE_COLORS_MAP={'Portfolio-Wide':'#E8500A','Portco Engagements':'#1A1A1A','Recurring Internal':'#6B6B6B','Other':'#D0CBC4'};
+const STATUS_COLORS={'In Progress':'#2D7A10','Not Started':'#A8A8A8','On Hold':'#D97706','Complete':'#E8500A','Blocked':'#C0392B','Placeholder':'#6D28D9'};
+
+function renderHBar(containerId, entries, total, colors){
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  const maxVal=entries[0]?entries[0][1]:1;
+  el.innerHTML=entries.map(([label,val],i)=>{
+    const pct=Math.round(val/total*100);
+    const barW=Math.round(val/maxVal*100); // bars relative to largest
+    const col=Array.isArray(colors)?colors[i%colors.length]:colors[label]||BAR_PALETTE[i%BAR_PALETTE.length];
+    return `<div class="hbar-row">
+      <div style="min-width:0;">
+        <div class="hbar-top">
+          <span class="hbar-label">${label}</span>
+          <span class="hbar-pct">${pct}%</span>
+        </div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${barW}%;background:${col};"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* renderPieCat removed */
+
+// ── Donut drawing helpers ─────────────────────────────────────
+const DONUT_COLORS={'Portfolio-Wide':'#E8500A','Portco Engagements':'#1A1A1A','Recurring Internal':'#6B6B6B','Other':'#D0CBC4'};
+
+function buildTypeMap(allocFn){
+  // allocFn(row) returns a number for the value to sum
+  const m={'Portfolio-Wide':0,'Portco Engagements':0,'Recurring Internal':0,'Other':0};
+  portfolioPrograms.forEach(r=>{ m['Portfolio-Wide']+=allocFn(r); });
+  let cur='';
+  otherRows.forEach(r=>{
+    if(r.section){cur=r.section;return;}
+    const b=cur==='PORTCO ENGAGEMENTS'?'Portco Engagements':cur==='RECURRING INTERNAL WORK'?'Recurring Internal':'Other';
+    m[b]+=allocFn(r);
+  });
+  return m;
+}
+
+function drawEngagementDonut(svgId, centerId, centerPct, centerLabel, entries, total){
+  const svg=document.getElementById(svgId);
+  const ctr=document.getElementById(centerId);
+  if(!svg) return;
+
+  // SVG coordinate space: 170×170, ring centered at (85,85)
+  // Extra margin around ring for callout labels: ring R=52, label zone up to R=82
+  const VB=170, cx=85, cy=85, R=52, IR=34;
+  svg.innerHTML='';
+
+  // Background ring
+  const bg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  bg.setAttribute('cx',cx); bg.setAttribute('cy',cy);
+  bg.setAttribute('r',(R+IR)/2); bg.setAttribute('fill','none');
+  bg.setAttribute('stroke','#EDE9E5'); bg.setAttribute('stroke-width',R-IR);
+  svg.appendChild(bg);
+
+  // Draw arcs + callout labels
+  let angle=-Math.PI/2;
+  entries.forEach(([label,val])=>{
+    const frac=val/total;
+    const sweep=frac*2*Math.PI;
+    const midAngle=angle+sweep/2;
+    const end=angle+sweep;
+
+    // Arc segment
+    const x1=cx+R*Math.cos(angle),   y1=cy+R*Math.sin(angle);
+    const x2=cx+R*Math.cos(end),     y2=cy+R*Math.sin(end);
+    const ix1=cx+IR*Math.cos(end),   iy1=cy+IR*Math.sin(end);
+    const ix2=cx+IR*Math.cos(angle), iy2=cy+IR*Math.sin(angle);
+    const lg=sweep>Math.PI?1:0;
+    const d=`M${x1.toFixed(2)},${y1.toFixed(2)} A${R},${R} 0 ${lg},1 ${x2.toFixed(2)},${y2.toFixed(2)} L${ix1.toFixed(2)},${iy1.toFixed(2)} A${IR},${IR} 0 ${lg},0 ${ix2.toFixed(2)},${iy2.toFixed(2)} Z`;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',d);
+    path.setAttribute('fill',DONUT_COLORS[label]||'#888');
+    path.setAttribute('stroke','#fff'); path.setAttribute('stroke-width','1.5');
+    svg.appendChild(path);
+
+    // Callout: only draw if segment >= 5%
+    if(frac>=0.05){
+      const pct=Math.round(frac*100);
+      // Point on the outer edge of the ring (midpoint of arc)
+      const armR=R+4;   // start of leader line (just outside ring)
+      const labelR=R+18; // end of leader line / label position
+      const lx1=cx+armR*Math.cos(midAngle);
+      const ly1=cy+armR*Math.sin(midAngle);
+      const lx2=cx+labelR*Math.cos(midAngle);
+      const ly2=cy+labelR*Math.sin(midAngle);
+      // Horizontal tick
+      const tickDir=Math.cos(midAngle)>=0?1:-1;
+      const tickLen=8;
+      const lx3=lx2+tickDir*tickLen;
+      const ly3=ly2;
+
+      // Leader line
+      const line=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+      line.setAttribute('points',`${lx1.toFixed(1)},${ly1.toFixed(1)} ${lx2.toFixed(1)},${ly2.toFixed(1)} ${lx3.toFixed(1)},${ly3.toFixed(1)}`);
+      line.setAttribute('fill','none');
+      line.setAttribute('stroke','#1A1A1A');
+      line.setAttribute('stroke-width','1');
+      svg.appendChild(line);
+
+      // Percent label at end of tick
+      const textAnchor=tickDir>=0?'start':'end';
+      const tx=lx3+(tickDir>=0?2:-2);
+      const ty=ly3+3.5; // vertical center
+      const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x',tx.toFixed(1)); txt.setAttribute('y',ty.toFixed(1));
+      txt.setAttribute('text-anchor',textAnchor);
+      txt.setAttribute('font-size','10'); txt.setAttribute('font-weight','700');
+      txt.setAttribute('fill','#1A1A1A');
+      txt.setAttribute('font-family','DM Sans,sans-serif');
+      txt.textContent=pct+'%';
+      svg.appendChild(txt);
+    }
+
+    angle=end;
+  });
+
+  // Center label
+  if(ctr) ctr.innerHTML=`
+    <span style="font-family:var(--fd);font-size:19px;font-weight:700;color:var(--ink);line-height:1;">${centerPct}%</span>
+    <span style="font-size:7.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;">Allocated</span>`;
+}
+
+function renderPieType(){
+  const curMo=new Date().getMonth();
+  const curMoName=MO[curMo];
+
+  // Update current month label
+  const lbl=document.getElementById('cur-mo-label');
+  if(lbl) lbl.textContent=curMoName+' '+new Date().getFullYear();
+
+  // Full-year type map: sum all 12 months
+  const fyMap=buildTypeMap(r=>r.alloc.reduce((a,b)=>a+b,0));
+  const fyTotal=Object.values(fyMap).reduce((a,b)=>a+b,0)||1;
+  const fyEntries=Object.entries(fyMap).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const grandTot=computeTotals();
+  const fyPct=Math.round(grandTot.reduce((a,b)=>a+b,0)/12*100);
+
+  // Current month type map: single month index
+  const cmMap=buildTypeMap(r=>r.alloc[curMo]||0);
+  const cmTotal=Object.values(cmMap).reduce((a,b)=>a+b,0)||1;
+  const cmEntries=Object.entries(cmMap).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const cmPct=Math.round(grandTot[curMo]*100);
+
+  drawEngagementDonut('donut-fy-svg','donut-fy-center', fyPct,'Allocated', fyEntries, fyTotal);
+  drawEngagementDonut('donut-cm-svg','donut-cm-center', cmPct,'Allocated', cmEntries, cmTotal);
+
+  // Shared legend (color swatches + labels only, no %)
+  const leg=document.getElementById('donut-shared-legend');
+  if(leg){
+    leg.innerHTML=Object.entries(DONUT_COLORS).map(([label,col])=>
+      `<div style="display:flex;align-items:center;gap:5px;">
+        <span style="width:8px;height:8px;border-radius:1px;background:${col};flex-shrink:0;display:block;"></span>
+        <span style="font-size:10px;color:var(--ink2);font-weight:500;">${label}</span>
+      </div>`
+    ).join('');
+  }
+}
+
+function renderPieStatus(allRows){ /* no-op */ }
+
+function renderBWChart(tot){
+  const el=document.getElementById('bw-chart');
+  if(!el) return;
+  const curMo=new Date().getMonth();
+
+  // Re-render on next frame to ensure el has width
+  if(!el.clientWidth){ setTimeout(()=>renderBWChart(tot),50); return; }
+
+  const CEILING=1.2;
+  const W=el.clientWidth;
+  const colW=W/12;
+  const chartH=90;
+  const labelH=16;
+  const pctH=13;
+  const totalH=chartH+labelH+pctH+6; // +6 for dot
+  const GAP=1;
+
+  // Pure capacity color scale — no current-month color change
+  // ≤50%: light gray  |  51-85%: near-black  |  86-100%: amber  |  >100%: red
+  function barColor(v){
+    if(v>1)      return {fill:'#C0392B', label:'#C0392B'};
+    if(v>0.85)   return {fill:'#D97706', label:'#D97706'};
+    if(v>0.5)    return {fill:'#1A1A1A', label:'#1A1A1A'};
+    if(v>0)      return {fill:'#1A1A1A', label:'#A8A8A8'};
+    return              {fill:'#E2DDD8', label:'#C8C0B8'};
+  }
+
+  let svg='';
+  // Dashed reference line at 100%
+  const refY=pctH+Math.round((1-1/CEILING)*chartH);
+  svg+=`<line x1="0" y1="${refY}" x2="${W}" y2="${refY}" stroke="#E2DDD8" stroke-width="1" stroke-dasharray="3,2"/>`;
+
+  MO.forEach((m,i)=>{
+    const v=tot[i];
+    const pct=Math.round(v*100);
+    const {fill,label}=barColor(v);
+    const barH=Math.min(Math.round(v/CEILING*chartH),chartH);
+    const x=i*colW+GAP/2;
+    const bw=colW-GAP;
+    const y=pctH+chartH-barH;
+
+    // Bar
+    if(barH>0) svg+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${barH.toFixed(1)}" fill="${fill}"/>`;
+
+    // % label above bar
+    if(pct>0){
+      const lblY=Math.max(y-2, pctH);
+      svg+=`<text x="${(x+bw/2).toFixed(1)}" y="${lblY.toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="${label}" font-family="DM Sans,sans-serif">${pct}%</text>`;
+    }
+
+    // Month label — current month in orange, others gray. Pure identifier, no capacity meaning.
+    const moY=pctH+chartH+labelH-2;
+    const moFill=i===curMo?'#E8500A':'#A8A8A8';
+    svg+=`<text x="${(x+bw/2).toFixed(1)}" y="${moY}" text-anchor="middle" font-size="9" font-weight="${i===curMo?'700':'500'}" fill="${moFill}" font-family="DM Sans,sans-serif">${m.toUpperCase()}</text>`;
+
+    // Orange dot under current month label
+    if(i===curMo) svg+=`<circle cx="${(x+bw/2).toFixed(1)}" cy="${pctH+chartH+labelH+3}" r="2" fill="#E8500A"/>`;
+  });
+
+  const overMonths=MO.filter((_,i)=>tot[i]>1);
+  el.innerHTML=`<div class="vbar-wrap">
+    <svg class="vbar-svg" viewBox="0 0 ${W} ${totalH}" height="${totalH}" style="display:block;width:100%;">${svg}</svg>
+    ${overMonths.length?`<div class="bw-over-tag">⚠ Over capacity: ${overMonths.join(', ')}</div>`:''}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WORKPLAN PHASES
+// ═══════════════════════════════════════════════════════════════
+function renderPhases(containerId, phases){
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML='';
+  phases.forEach((ph,pi)=>{
+    const phId=containerId+'-ph'+pi;
+    el.innerHTML+=`<div class="phase-block">
+      <div class="phase-hdr" onclick="togglePhase('${phId}')">
+        <span class="ph-badge">Phase ${pi+1}</span>
+        <span class="ph-title">${ph.title}</span>
+        <div class="ph-meta">
+          <select class="st-sel" onclick="event.stopPropagation()" onchange="styleStatusSel(this)">
+            ${STATUS_OPTS.map(o=>`<option${o===ph.status?' selected':''}>${o}</option>`).join('')}
+          </select>
+          <span class="ph-dates">${ph.dates}</span>
+          <span class="ph-chev open" id="${phId}-chev">▾</span>
+        </div>
+      </div>
+      <div id="${phId}-body">
+        <table class="task-tbl">
+          <thead><tr>
+            <th style="width:42px;">#</th>
+            <th style="min-width:240px;">Task</th>
+            <th style="min-width:100px;">Status</th>
+            <th>Owner</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Dur.</th>
+            <th style="min-width:160px;">Output / Notes</th>
+          </tr></thead>
+          <tbody>
+            ${ph.tasks.map(t=>renderTaskRow(t)).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+    // style selects after injection
+    setTimeout(()=>{
+      document.querySelectorAll(`#${phId}-body .st-sel`).forEach(styleStatusSel);
+      document.querySelectorAll(`#${phId}-body .t-st-sel`).forEach(sel=>{
+        const v=sel.value;
+        sel.className=`t-st-sel ts-${statusCls(v)}`;
+      });
+    },0);
+  });
+}
+
+function renderTaskRow(t){
+  if(t.milestone){
+    return `<tr class="t-milestone"><td class="t-num" style="white-space:nowrap;">${t.num.replace(/u$/,'')} ◆</td><td colspan="7">${t.task}</td></tr>`;
+  }
+  const ownerOpts=OWNERS.map(o=>`<option${o===t.owner?' selected':''}>${o}</option>`).join('');
+  const stCls=`ts-${statusCls(t.status||'Not Started')}`;
+  return `<tr>
+    <td class="t-num">${t.num}</td>
+    <td class="t-task t-sub">${t.task}</td>
+    <td><select class="t-st-sel ${stCls}" onchange="this.className='t-st-sel ts-'+statusCls(this.value);showSaved();">
+      ${['Not Started','In Progress','Complete','On Hold','Blocked','On Track'].map(o=>`<option${o===(t.status||'Not Started')?' selected':''}>${o}</option>`).join('')}
+    </select></td>
+    <td><select class="t-owner-sel">${ownerOpts}</select></td>
+    <td><div class="t-date-wrap"><input class="t-date-inp" type="date" value="${t.start||''}" onchange="calcDur(this)" style="width:110px;"><span class="cal-icon" onclick="this.previousElementSibling.showPicker&&this.previousElementSibling.showPicker()">📅</span></div></td>
+    <td><div class="t-date-wrap"><input class="t-date-inp" type="date" value="${t.end||''}" onchange="calcDur(this)" style="width:110px;"><span class="cal-icon" onclick="this.previousElementSibling.showPicker&&this.previousElementSibling.showPicker()">📅</span></div></td>
+    <td class="t-dur" id="dur-${t.num}">${t.dur||'—'}</td>
+    <td class="t-output">${t.output||''}</td>
+  </tr>`;
+}
+
+function calcDur(inp){
+  const row=inp.closest('tr');
+  const dates=row.querySelectorAll('.t-date-inp');
+  if(dates.length<2) return;
+  const s=new Date(dates[0].value), e=new Date(dates[1].value);
+  if(isNaN(s)||isNaN(e)) return;
+  const days=Math.round((e-s)/86400000)+1;
+  const durCell=row.querySelector('.t-dur');
+  if(durCell) durCell.textContent=days>0?days+'d':'—';
+  showSaved();
+}
+
+function togglePhase(id){
+  const body=document.getElementById(id+'-body');
+  const chev=document.getElementById(id+'-chev');
+  if(!body) return;
+  const hidden=body.style.display==='none';
+  body.style.display=hidden?'':'none';
+  if(chev){ chev.textContent=hidden?'▾':'▸'; chev.classList.toggle('open',hidden); }
+}
+
+// ─── Cost Out Phases ───────────────────────────────────────────
+const costPhases=[
+  {title:'Project Definition, Validation & Launch',status:'Complete',dates:'Feb 23 – Mar 13, 2026 · 3 Wks',tasks:[
+    {num:'1.1',task:'Partner short list, key questions and intros',status:'Complete',owner:'RA',start:'2026-02-23',end:'2026-02-27',dur:'5d',output:'Shortlist + intro calls completed'},
+    {num:'1.2',task:'NDAs signed; share high-level portfolio spend',status:'Complete',owner:'RA',start:'2026-03-02',end:'2026-03-06',dur:'5d',output:'Clean high-level portfolio spend overview'},
+    {num:'1.3',task:'Define approach by spend bucket; continued partner discussions; confirm universal vendor spend cube template',status:'Complete',owner:'RA',start:'2026-03-09',end:'2026-03-13',dur:'5d',output:'Refined plan of attack + universal template'},
+    {num:'1u',task:'RA+SL Phase 2 Go/No-Go decision · Mar 13, 2026',milestone:true},
+  ]},
+  {title:'Securing Sunstone Alignment & Engaging Portfolio',status:'Complete',dates:'Mar 16 – Apr 24, 2026 · 6 Wks',tasks:[
+    {num:'2.1',task:'Build tight decision deck for FLT (rationale, pilot cohort, partner fee/model, governance, expected savings range)',status:'Complete',owner:'RA',start:'2026-03-16',end:'2026-03-27',dur:'12d',output:'Decision deck for partners'},
+    {num:'2.2',task:'POG presentation to partners',status:'Complete',owner:'SL',start:'2026-03-30',end:'2026-03-30',dur:'1d',output:''},
+    {num:'2.2u',task:'Partner Go/No-Go sign-off · Mar 30, 2026 · Explicit decision + approved next-step timeline',milestone:true},
+    {num:'2.3',task:'Iterate presentation as needed',status:'Complete',owner:'RA',start:'2026-03-30',end:'2026-04-03',dur:'5d',output:''},
+    {num:'2.4',task:'POG presentation to IC',status:'Complete',owner:'RA',start:'2026-04-06',end:'2026-04-06',dur:'1d',output:''},
+    {num:'2.5',task:'CFO outreach with presentation; distribute vendor spend template w/ 10-day turnaround ask',status:'Complete',owner:'RA',start:'2026-04-06',end:'2026-04-17',dur:'12d',output:'CFO alignment + confirmed pilot candidates'},
+    {num:'2.6',task:'Ongoing FinOps assistance for PortCos re: the data ask',status:'Complete',owner:'RA/AGMAJ',start:'2026-04-20',end:'2026-04-24',dur:'5d',output:''},
+  ]},
+  {title:'Identifying Cost Opportunities & Selecting Partner Strategy',status:'Not Started',dates:'Apr 27 – May 29, 2026 · 4 Wks',tasks:[
+    {num:'3.1',task:'Receive data from CFOs; distribute to partners (2) with tight turnaround for bounded proposals',status:'In Progress',owner:'RA',start:'2026-04-27',end:'2026-05-01',dur:'5d',output:''},
+    {num:'3.2',task:'Receive, review and score/summarize proposals',status:'Not Started',owner:'RA',start:'2026-05-04',end:'2026-05-08',dur:'5d',output:'Bounded partner proposals + pilot plan'},
+    {num:'3.3',task:'Finalize partner strategy (who and how)',status:'Not Started',owner:'RA',start:'2026-05-11',end:'2026-05-15',dur:'5d',output:''},
+    {num:'3.4',task:'Create portfolio-specific and portfolio-wide cost-out tracker',status:'Not Started',owner:'RA/Partner',start:'2026-05-18',end:'2026-05-22',dur:'5d',output:''},
+    {num:'3.5',task:'Finalize plan with partner, modify agreement as needed, and sign',status:'Not Started',owner:'RA',start:'2026-05-25',end:'2026-05-29',dur:'5d',output:''},
+    {num:'3.5u',task:'Partner strategy terms and execution plans finalized · May 29, 2026',milestone:true},
+  ]},
+  {title:'Negotiate and Implement Initial Cost Savings',status:'Not Started',dates:'Jun 1 – Oct 22, 2026 · 5 Months',tasks:[
+    {num:'4.1',task:'Kickoff alignment calls (Sunstone + Partner + CFOs/POCs)',status:'Not Started',owner:'RA/Partner',start:'2026-06-01',end:'2026-06-12',dur:'2 wks',output:'Vendor scope confirmed + weekly cadence set'},
+    {num:'4.2',task:'Targeted data follow-ups + QA',status:'Not Started',owner:'RA/Partner',start:'2026-06-15',end:'2026-06-18',dur:'4d',output:''},
+    {num:'4.2u',task:'Negotiation plans, process and inputs complete; execution & tracking begins · Jun 18',milestone:true},
+    {num:'4.3',task:'Execute negotiation strategies (Partner-led; PortCo-approved)',status:'Not Started',owner:'RA/Partner',start:'2026-06-21',end:'2026-09-17',dur:'~3 mos',output:''},
+    {num:'4.4',task:'Implement concessions + confirm realization (billing/seats/terms)',status:'Not Started',owner:'RA/Partner',start:'2026-09-20',end:'2026-10-08',dur:'3 wks',output:'Signed amendments + realized savings log'},
+    {num:'4.5',task:'Manage & track savings (weekly cadence + Finance validation)',status:'Not Started',owner:'RA/Partner',start:'2026-06-21',end:'',dur:'Ongoing',output:''},
+    {num:'4.6',task:'Pilot closeout readout + scale decision package (AGM/IC)',status:'Not Started',owner:'RA/Partner',start:'2026-10-11',end:'2026-10-22',dur:'2 wks',output:'AGM/IC deck + validated savings + scale plan'},
+    {num:'4.6u',task:'Pilot readout & scale decision (AGM/IC) · Oct 22, 2026',milestone:true},
+  ]},
+];
+
+const primePhases=[
+  {title:'Preferred Vendor Inventory & Current State Baseline',status:'Complete',dates:'Mar 16 – Apr 10, 2026 · 4 Weeks',tasks:[
+    {num:'1.1',task:'Compile master list of all current vendors with existing preferred pricing agreements',status:'Complete',owner:'RA',start:'2026-03-16',end:'2026-03-20',dur:'5d',output:'Vendor inventory spreadsheet with contract terms, pricing, expiry'},
+    {num:'1.2',task:'Categorize vendors by type (SaaS vs. Services) and functional area',status:'Complete',owner:'RA',start:'2026-03-23',end:'2026-03-27',dur:'5d',output:'Categorized vendor matrix aligned to one-pager structure'},
+    {num:'1.3',task:'Gather and centralize all existing pricing agreements into SharePoint',status:'Complete',owner:'RA',start:'2026-03-30',end:'2026-04-03',dur:'5d',output:'Centralized document repository with all current agreements'},
+    {num:'1.4',task:'Document current discount levels (% off list, volume tiers, bundled pricing) and key contract terms',status:'Complete',owner:'RA',start:'2026-04-06',end:'2026-04-10',dur:'5d',output:'Pricing detail log: discount %, effective dates, renewal terms'},
+    {num:'1u',task:'Current state vendor inventory and pricing baseline complete — One Slide + SharePoint docs · Apr 10, 2026',milestone:true},
+  ]},
+  {title:'Preferred Vendor Gap Analysis & One-Pager Content Design',status:'Not Started',dates:'Apr 13 – May 8, 2026 · 3 Weeks',tasks:[
+    {num:'2.1',task:"Define desired end-state vendor coverage: identify target vendors where Sunstone should have preferred pricing but doesn't",status:'In Progress',owner:'RA',start:'2026-04-13',end:'2026-04-17',dur:'5d',output:'Gap analysis: target vendor wish list with rationale + priority ranking'},
+    {num:'2.2',task:'Gather select CFO feedback (2–3) on draft desired end-state to gauge PortCo demand',status:'In Progress',owner:'RA',start:'2026-04-20',end:'2026-04-24',dur:'5d',output:'Future state vendor list refined with PortCo input'},
+    {num:'2.2u',task:'Future state preferred vendor inventory complete · Apr 24, 2026',milestone:true},
+    {num:'2.3',task:'Design one-pager content and layout: fields, categories, discount %, contact, renewal date',status:'Not Started',owner:'RA',start:'2026-04-27',end:'2026-05-01',dur:'5d',output:'Draft one-pager template with agreed-upon fields and layout'},
+    {num:'2.4',task:'Align with Sean on categorization framework and prioritization criteria',status:'Not Started',owner:'RA/SL',start:'2026-05-04',end:'2026-05-08',dur:'5d',output:'Approved taxonomy + content decisions documented'},
+    {num:'2u',task:'Gap analysis complete; one-pager template and content framework approved · May 8, 2026',milestone:true},
+  ]},
+  {title:'Preferred Vendor Outreach, Negotiation & Final One-Pager Delivery',status:'Not Started',dates:'May 11 – Jun 16, 2026 · 4 Weeks',tasks:[
+    {num:'3.1',task:'Initiate outreach to priority gap vendors (intro calls, term sheets)',status:'Not Started',owner:'RA',start:'2026-05-11',end:'2026-05-15',dur:'5d',output:'Outreach tracker with status, contact, and next steps per vendor'},
+    {num:'3.2',task:'Negotiate and finalize new preferred pricing terms; execute agreements where possible',status:'Not Started',owner:'RA',start:'2026-05-18',end:'2026-05-22',dur:'5d',output:'Signed or near-final preferred pricing agreements for new vendors'},
+    {num:'3.3',task:'Populate final one-pager with all confirmed preferred vendors, pricing details, and categories',status:'Not Started',owner:'RA',start:'2026-05-25',end:'2026-05-29',dur:'5d',output:'Draft final one-pager: complete, formatted, and ready for review'},
+    {num:'3.4',task:'POG presentation to partners; iterate as needed',status:'Not Started',owner:'RA/SL',start:'2026-06-01',end:'2026-06-05',dur:'5d',output:'Final approved one-pager distributed to portfolio'},
+    {num:'3.4u',task:'Partner sign-off · Jun 5, 2026',milestone:true},
+    {num:'3.5',task:'Distribute one-pager to portfolio companies; establish ongoing update and vendor-addition process',status:'Not Started',owner:'RA',start:'2026-06-05',end:'2026-06-09',dur:'5d',output:'Distribution confirmed + maintenance cadence defined'},
+    {num:'3.6',task:'Incorporate into POG/FinOps capability slides',status:'Not Started',owner:'RA',start:'2026-06-12',end:'2026-06-16',dur:'5d',output:''},
+    {num:'3u',task:'Sunstone Prime Program one-pager finalized, distributed to portfolio, and included in POG capability slides · Jun 16, 2026',milestone:true},
+  ]},
+];
+
+const aiPhases=[
+  {title:'Scoping & Needs Assessment',status:'Not Started',dates:'TBD · ~4 Weeks',tasks:[
+    {num:'1.1',task:'Assess current financial close process at pilot PortCos (TelliHealth, Clearwater)',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Current-state close timeline by PortCo'},
+    {num:'1.2',task:'Identify key bottlenecks and AI-addressable steps in close cycle',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Bottleneck map + prioritized AI use-case list'},
+    {num:'1.3',task:'Benchmark close cycle time vs. industry peers',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Benchmark summary + target close-day goals'},
+    {num:'1.4',task:'Survey AI tooling landscape: ERP AI modules, automation tools, close management platforms',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Short list of 3–5 tools for pilot consideration'},
+    {num:'1u',task:'Scoping complete — baseline established, AI tool shortlist approved',milestone:true},
+  ]},
+  {title:'Pilot Design & Internal Alignment',status:'Not Started',dates:'TBD · ~3 Weeks',tasks:[
+    {num:'2.1',task:'Define pilot success criteria (target close day reduction, error rate, CFO bandwidth saved)',status:'Not Started',owner:'RA/SL',start:'',end:'',dur:'',output:'Pilot scorecard with measurable KPIs'},
+    {num:'2.2',task:'Select pilot PortCos and align CFOs on participation and data sharing',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Signed-off pilot cohort + CFO intro calls complete'},
+    {num:'2.3',task:'POG presentation to partners for sign-off on approach and budget',status:'Not Started',owner:'RA/SL',start:'',end:'',dur:'',output:'Partner approval + allocated budget'},
+    {num:'2u',task:'Pilot approved and cohort confirmed',milestone:true},
+  ]},
+  {title:'Pilot Execution & Measurement',status:'Not Started',dates:'TBD · ~8 Weeks',tasks:[
+    {num:'3.1',task:'Implement AI tooling at pilot PortCos; train finance teams',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Tool live at pilot sites + training complete'},
+    {num:'3.2',task:'Run 2 close cycles with AI-assisted process; track vs. baseline',status:'Not Started',owner:'RA/Partner',start:'',end:'',dur:'',output:'Before/after close-day data + error rate delta'},
+    {num:'3.3',task:'Collect CFO feedback; refine approach as needed',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'CFO survey results + refined playbook'},
+    {num:'3.4',task:'Build readout deck for Sunstone IC — results, learnings, scale recommendation',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'IC-ready results deck + scale/no-scale recommendation'},
+    {num:'3u',task:'AI Close Challenge pilot readout to IC — Go/No-Go on portfolio-wide rollout',milestone:true},
+  ]},
+];
+
+const budgetPhases=[
+  {title:'Pre-Budget Preparation & Template Design',status:'Not Started',dates:'Sep 2026 · ~3 Weeks',tasks:[
+    {num:'1.1',task:'Review prior-year budget process; incorporate lessons learned from 2026 cycle',status:'Not Started',owner:'RA',start:'2026-09-07',end:'2026-09-11',dur:'5d',output:'Process improvement notes + updated timeline'},
+    {num:'1.2',task:'Build/refresh standardized 2027 budget template (P&L, headcount, capex) aligned with portfolio reporting standards',status:'Not Started',owner:'RA',start:'2026-09-14',end:'2026-09-18',dur:'5d',output:'2027 Budget Template v1 + guidance doc for CFOs'},
+    {num:'1.3',task:'Align with partners on key assumptions, growth targets, and strategic priorities to inform budget guidance',status:'Not Started',owner:'RA/SL',start:'2026-09-21',end:'2026-09-25',dur:'5d',output:'Partner-approved budget guidance letter for CFOs'},
+    {num:'1u',task:'Template and guidance approved; ready for CFO distribution',milestone:true},
+  ]},
+  {title:'Portfolio Company Budget Submissions',status:'Not Started',dates:'Oct 2026 · ~4 Weeks',tasks:[
+    {num:'2.1',task:'Distribute templates + guidance to all PortCo CFOs; kick off formal budget process',status:'Not Started',owner:'RA',start:'2026-10-05',end:'2026-10-07',dur:'3d',output:'Templates distributed + acknowledgement received from all CFOs'},
+    {num:'2.2',task:'Hold budget kickoff calls with each PortCo CFO; answer Q&A; set internal deadlines',status:'Not Started',owner:'RA',start:'2026-10-05',end:'2026-10-09',dur:'1 wk',output:'Meeting notes + per-PortCo submission deadlines confirmed'},
+    {num:'2.3',task:'Track submissions; follow up with outstanding CFOs',status:'Not Started',owner:'RA',start:'2026-10-12',end:'2026-10-23',dur:'2 wks',output:'Submission tracker (all PortCos)'},
+    {num:'2.4',task:'QA all received budgets: format compliance, key ratio checks, assumptions review',status:'Not Started',owner:'RA',start:'2026-10-19',end:'2026-10-30',dur:'2 wks',output:'QA sign-off checklist per PortCo'},
+    {num:'2u',task:'All PortCo budgets received and QA\'d',milestone:true},
+  ]},
+  {title:'Portfolio Roll-Up, Review & Partner Approval',status:'Not Started',dates:'Nov 2026 · ~3 Weeks',tasks:[
+    {num:'3.1',task:'Consolidate all PortCo budgets into portfolio roll-up summary (revenue, EBITDA, headcount, capex)',status:'Not Started',owner:'RA',start:'2026-11-02',end:'2026-11-06',dur:'5d',output:'Portfolio 2027 Budget Roll-Up (consolidated view)'},
+    {num:'3.2',task:'Flag outliers, concerns, and items requiring partner discussion',status:'Not Started',owner:'RA',start:'2026-11-02',end:'2026-11-06',dur:'5d',output:'Exceptions memo for partners'},
+    {num:'3.3',task:'Partner budget review meetings; challenge sessions as needed',status:'Not Started',owner:'RA/SL',start:'2026-11-09',end:'2026-11-13',dur:'1 wk',output:'Partner meeting notes + approved/revised budgets'},
+    {num:'3.4',task:'Finalize and distribute approved 2027 budgets; load into portfolio reporting infrastructure',status:'Not Started',owner:'RA',start:'2026-11-16',end:'2026-11-20',dur:'5d',output:'2027 approved budgets filed in SharePoint + loaded into reporting system'},
+    {num:'3u',task:'2027 Portfolio Budget approved and loaded — full-year planning baseline established for all portfolio companies',milestone:true},
+  ]},
+];
+
+// ═══════════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════════
+const TAB_IDS=['dashboard','full-year','cost-out','prime','ai-close','budget'];
+function showTab(name){
+  TAB_IDS.forEach(id=>{
+    const el=document.getElementById('tab-'+id);
+    if(el) el.classList.toggle('section-hidden',id!==name);
+  });
+  document.querySelectorAll('.tb').forEach(b=>{
+    const matches=(name==='dashboard'&&b.textContent==='Dashboard')||(name==='full-year'&&b.textContent==='Full Year')||(name==='cost-out'&&b.textContent==='Cost Optimization')||(name==='prime'&&b.textContent==='Prime Program')||(name==='ai-close'&&b.textContent==='AI Close Challenge')||(name==='budget'&&b.textContent==='2027 Budget');
+    b.classList.toggle('on',matches);
+  });
+  if(name==='full-year') renderFY();
+  if(name==='dashboard') renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACTIVITY LOG
+// ═══════════════════════════════════════════════════════════════
+function addLog(section){
+  const inp=document.getElementById(section+'-log-input');
+  if(!inp||!inp.value.trim()) return;
+  const now=new Date();
+  const d=now.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  logs[section].unshift({text:inp.value.trim(),date:d});
+  inp.value='';
+  renderLog(section);
+  showSaved();
+}
+function renderLog(s){
+  const el=document.getElementById(s+'-log-list');
+  if(!el) return;
+  el.innerHTML=logs[s].length===0?'<div style="font-size:11px;color:var(--ink4);font-style:italic;">No notes yet.</div>':logs[s].map(e=>`<div class="log-entry"><span class="log-date">${e.date}</span><span>${e.text}</span></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  // date
+  const d=new Date();
+  document.getElementById('hd-date').textContent=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+
+  // render phases
+  renderPhases('cost-phase-container',costPhases);
+  renderPhases('prime-phase-container',primePhases);
+  renderPhases('ai-phase-container',aiPhases);
+  renderPhases('budget-phase-container',budgetPhases);
+
+  // style all workplan status selects
+  document.querySelectorAll('.st-sel').forEach(styleStatusSel);
+
+  // init logs
+  Object.keys(logs).forEach(renderLog);
+
+  // render active tab
+  renderDashboard();
+});
+// ═══════════════════════════════════════════════════════════════
+// EXPORT — bake all live data back into HTML and download
+// ═══════════════════════════════════════════════════════════════
+function exportSnapshot(){
+  // 1. Grab the current HTML source
+  let html = document.documentElement.outerHTML;
+
+  // 2. Serialize live data objects as JSON
+  const snap = {
+    portfolioPrograms: portfolioPrograms,
+    otherRows: otherRows,
+    logs: logs,
+    exportedAt: new Date().toISOString()
+  };
+  const snapJson = JSON.stringify(snap).replace(/</g,'\u003c').replace(/>/g,'\u003e');
+
+  // 3. Inject a <script> block right before </body> that restores
+  //    the data on next load, overwriting the defaults
+  const restoreScript = `<script id="snapshot-restore">
+(function(){
+  const snap = ${snapJson};
+  // Patch portfolioPrograms in-place so alloc + status are restored
+  snap.portfolioPrograms.forEach(function(sp){
+    const p = portfolioPrograms.find(function(x){return x.id===sp.id;});
+    if(p){ p.alloc=sp.alloc; p.status=sp.status; p.cat=sp.cat; p.co=sp.co; p.pri=sp.pri; }
+  });
+  // Restore otherRows entirely (handles added/deleted rows)
+  otherRows.length=0;
+  snap.otherRows.forEach(function(r){ otherRows.push(r); });
+  // Restore logs
+  Object.keys(snap.logs).forEach(function(k){ logs[k]=snap.logs[k]; });
+  // Re-render after restore
+  document.addEventListener('DOMContentLoaded',function(){
+    Object.keys(logs).forEach(renderLog);
+    renderDashboard();
+  },{once:true});
+})();
+<\/script>`;
+
+  // 4. Remove any previous snapshot-restore block so we don't stack them
+  html = html.replace(/<script id="snapshot-restore">[\s\S]*?<\/script>/g, '');
+
+  // 5. Insert restore script just before </body>
+  html = html.replace('</body>', restoreScript + '\n</body>');
+
+  // 6. Trigger download
+  const ts = new Date().toISOString().slice(0,10);
+  const fname = 'Sunstone_2026_Tracker_' + ts + '.html';
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = fname;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // 7. Flash confirmation
+  const btn = document.querySelector('[onclick="exportSnapshot()"]');
+  if(btn){ const orig=btn.innerHTML; btn.innerHTML='✓ Saved!'; btn.style.background='#2D7A10'; setTimeout(()=>{ btn.innerHTML=orig; btn.style.background='var(--orange)'; },2000); }
+}
+
+</script>
+</body>
+</html>
