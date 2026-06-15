@@ -512,9 +512,9 @@ const STATUS_OPTS = ['Not Started','In Progress','On Hold','Complete','Blocked',
 // DATA — Portfolio programs (editable via Full Year)
 // ═══════════════════════════════════════════════════════════════
 const portfolioPrograms = [
-  {id:'cost-out',num:1,name:'Sunstone Edge Program (Cost Out)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Visibility',alloc:[0,0.05,0.3,0.4,0.35,0.3,0.3,0.2,0.15,0.1,0,0],tab:'cost-out'},
-  {id:'prime',num:2,name:'Sunstone Prime Program (Preferred Vendors)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Reduced Deal Team Time',alloc:[0,0,0.1,0.15,0.15,0.1,0,0,0,0,0,0],tab:'prime'},
-  {id:'ai-close',num:3,name:'AI Close Acceleration Challenge',cat:'Finance Modernization',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Exit Readiness, Margin Expansion',alloc:[0,0,0,0,0.05,0.15,0.1,0.1,0.05,0,0,0],tab:'ai-close'},
+  {id:'cost-out',num:1,name:'Sunstone Edge Program (Cost Out)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Visibility',alloc:[0,0.05,0.3,0.4,0.5,0.5,0.3,0.2,0.15,0.1,0.1,0.1],tab:'cost-out'},
+  {id:'prime',num:2,name:'Sunstone Prime Program (Preferred Vendors)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Reduced Deal Team Time',alloc:[0,0,0.1,0.15,0.1,0.1,0.1,0.05,0.05,0.05,0.05,0],tab:'prime'},
+  {id:'ai-close',num:3,name:'AI Close Acceleration Challenge',cat:'Finance Modernization',co:'Portfolio-Wide',pri:'A',status:'Placeholder',drivers:'Visibility, Exit Readiness, Margin Expansion',alloc:[0,0,0,0,0,0,0,0,0.05,0.15,0.1,0.05],tab:'ai-close'},
   {id:'budget',num:4,name:'2027 Budget Process',cat:'Performance Monitoring',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Risk Management, Exit Readiness',alloc:[0,0,0,0,0,0,0,0,0.3,0.2,0.2,0.2],tab:'budget'},
 ];
 
@@ -523,11 +523,11 @@ const portfolioPrograms = [
 // ═══════════════════════════════════════════════════════════════
 let otherRows = [
   {section:'PORTCO ENGAGEMENTS'},
-  {id:'r5',num:5,name:'NetSuite Implementation',cat:'Finance Modernization',co:'TelliHealth',pri:'A',status:'On Hold',alloc:[0.4,0.3,0.1,0.05,0.2,0.2,0.1,0,0,0,0,0]},
-  {id:'r6',num:6,name:'Back Office Staffing (Controller + 2 junior)',cat:'Post-Close Onboarding',co:'TelliHealth',pri:'C',status:'In Progress',alloc:[0,0.1,0.1,0.05,0,0,0,0,0,0,0,0]},
-  {id:'r7',num:7,name:'Monthly Reporting Standup',cat:'Post-Close Onboarding',co:'Clearwater',pri:'A',status:'In Progress',alloc:[0.05,0.05,0.05,0,0,0,0,0,0,0,0,0]},
-  {id:'r8',num:8,name:'Post-Close Onboarding: Peloton',cat:'Post-Close Onboarding',co:'Peloton',pri:'A',status:'Placeholder',alloc:[0,0,0,0.2,0.2,0.2,0,0,0,0,0,0]},
-  {id:'r9',num:9,name:'Post-Close Onboarding: Placeholder',cat:'Post-Close Onboarding',co:'TBD',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0,0.2,0.2,0.2,0.2,0.2,0.2]},
+  {id:'r5',num:5,name:'NetSuite Implementation',cat:'Finance Modernization',co:'TelliHealth',pri:'A',status:'In Progress',alloc:[0.4,0.3,0.1,0.05,0.1,0.1,0.05,0,0,0,0,0]},
+  {id:'r6',num:6,name:'Back Office Staffing (Controller)',cat:'Post-Close Onboarding',co:'TelliHealth',pri:'C',status:'Complete',alloc:[0,0.1,0.1,0.1,0.05,0,0,0,0,0,0,0]},
+  {id:'r7',num:7,name:'Monthly Reporting Standup',cat:'Post-Close Onboarding',co:'Clearwater',pri:'A',status:'Complete',alloc:[0.05,0.05,0.05,0,0,0,0,0,0,0,0,0]},
+  {id:'r8',num:8,name:'Post-Close Onboarding: Peloton',cat:'Post-Close Onboarding',co:'Peloton',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0.2,0.2,0.2,0,0,0,0]},
+  {id:'r9',num:9,name:'Post-Close Onboarding: Placeholder',cat:'Post-Close Onboarding',co:'TBD',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0,0,0.2,0.2,0.2,0.2,0.2]},
   {section:'RECURRING INTERNAL WORK'},
   {id:'r10',num:10,name:'Portfolio Data Ingestion & Benchmarking',cat:'Sunstone Portfolio Reporting',co:'Internal',pri:'B',status:'In Progress',alloc:[0.15,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]},
   {id:'r11',num:11,name:'Ad-Hoc Benchmarking & Analysis',cat:'Sunstone Portfolio Reporting',co:'Internal',pri:'A',status:'Placeholder',alloc:[0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05]},
@@ -1105,6 +1105,7 @@ function renderPhases(containerId, phases){
   el.innerHTML='';
   phases.forEach((ph,pi)=>{
     const phId=containerId+'-ph'+pi;
+    const collapsed = ph.status==='Complete';  // auto-collapse completed phases
     el.innerHTML+=`<div class="phase-block">
       <div class="phase-hdr" onclick="togglePhase('${phId}')">
         <span class="ph-badge">Phase ${pi+1}</span>
@@ -1114,10 +1115,10 @@ function renderPhases(containerId, phases){
             ${STATUS_OPTS.map(o=>`<option${o===ph.status?' selected':''}>${o}</option>`).join('')}
           </select>
           <span class="ph-dates">${ph.dates}</span>
-          <span class="ph-chev open" id="${phId}-chev">▾</span>
+          <span class="ph-chev${collapsed?'':' open'}" id="${phId}-chev">${collapsed?'▸':'▾'}</span>
         </div>
       </div>
-      <div id="${phId}-body">
+      <div id="${phId}-body" style="${collapsed?'display:none;':''}">
         <table class="task-tbl">
           <thead><tr>
             <th style="width:42px;">#</th>
@@ -1204,19 +1205,19 @@ const costPhases=[
     {num:'2.5',task:'CFO outreach with presentation; distribute vendor spend template w/ 10-day turnaround ask',status:'Complete',owner:'RA',start:'2026-04-06',end:'2026-04-17',dur:'12d',output:'CFO alignment + confirmed pilot candidates'},
     {num:'2.6',task:'Ongoing FinOps assistance for PortCos re: the data ask',status:'Complete',owner:'RA/AGMAJ',start:'2026-04-20',end:'2026-04-24',dur:'5d',output:''},
   ]},
-  {title:'Identifying Cost Opportunities & Selecting Partner Strategy',status:'Not Started',dates:'Apr 27 – May 29, 2026 · 4 Wks',tasks:[
-    {num:'3.1',task:'Receive data from CFOs; distribute to partners (2) with tight turnaround for bounded proposals',status:'In Progress',owner:'RA',start:'2026-04-27',end:'2026-05-01',dur:'5d',output:''},
-    {num:'3.2',task:'Receive, review and score/summarize proposals',status:'Not Started',owner:'RA',start:'2026-05-04',end:'2026-05-08',dur:'5d',output:'Bounded partner proposals + pilot plan'},
-    {num:'3.3',task:'Finalize partner strategy (who and how)',status:'Not Started',owner:'RA',start:'2026-05-11',end:'2026-05-15',dur:'5d',output:''},
-    {num:'3.4',task:'Create portfolio-specific and portfolio-wide cost-out tracker',status:'Not Started',owner:'RA/Partner',start:'2026-05-18',end:'2026-05-22',dur:'5d',output:''},
-    {num:'3.5',task:'Finalize plan with partner, modify agreement as needed, and sign',status:'Not Started',owner:'RA',start:'2026-05-25',end:'2026-05-29',dur:'5d',output:''},
+  {title:'Identifying Cost Opportunities & Selecting Partner Strategy',status:'Complete',dates:'Apr 27 – May 29, 2026 · 4 Wks',tasks:[
+    {num:'3.1',task:'Receive data from CFOs; distribute to partners (2) with tight turnaround for bounded proposals',status:'Complete',owner:'RA',start:'2026-04-27',end:'2026-05-01',dur:'5d',output:''},
+    {num:'3.2',task:'Receive, review and score/summarize proposals',status:'Complete',owner:'RA',start:'2026-05-04',end:'2026-05-08',dur:'5d',output:'Bounded partner proposals + pilot plan'},
+    {num:'3.3',task:'Finalize partner strategy (who and how)',status:'Complete',owner:'RA',start:'2026-05-11',end:'2026-05-15',dur:'5d',output:''},
+    {num:'3.4',task:'Create portfolio-specific and portfolio-wide cost-out tracker',status:'Complete',owner:'RA/Partner',start:'2026-05-18',end:'2026-05-22',dur:'5d',output:''},
+    {num:'3.5',task:'Finalize plan with partner, modify agreement as needed, and sign',status:'Complete',owner:'RA',start:'2026-05-25',end:'2026-05-29',dur:'5d',output:''},
     {num:'3.5u',task:'Partner strategy terms and execution plans finalized · May 29, 2026',milestone:true},
   ]},
-  {title:'Negotiate and Implement Initial Cost Savings',status:'Not Started',dates:'Jun 1 – Oct 22, 2026 · 5 Months',tasks:[
-    {num:'4.1',task:'Kickoff alignment calls (Sunstone + Partner + CFOs/POCs)',status:'Not Started',owner:'RA/Partner',start:'2026-06-01',end:'2026-06-12',dur:'2 wks',output:'Vendor scope confirmed + weekly cadence set'},
-    {num:'4.2',task:'Targeted data follow-ups + QA',status:'Not Started',owner:'RA/Partner',start:'2026-06-15',end:'2026-06-18',dur:'4d',output:''},
+  {title:'Negotiate and Implement Initial Cost Savings',status:'In Progress',dates:'Jun 1 – Oct 22, 2026 · 5 Months',tasks:[
+    {num:'4.1',task:'Kickoff alignment calls (Sunstone + Partner + CFOs/POCs)',status:'In Progress',owner:'RA/Partner',start:'2026-06-01',end:'2026-06-12',dur:'2 wks',output:'Vendor scope confirmed + weekly cadence set'},
+    {num:'4.2',task:'Targeted data follow-ups + QA',status:'In Progress',owner:'RA/Partner',start:'2026-06-15',end:'2026-06-18',dur:'4d',output:''},
     {num:'4.2u',task:'Negotiation plans, process and inputs complete; execution & tracking begins · Jun 18',milestone:true},
-    {num:'4.3',task:'Execute negotiation strategies (Partner-led; PortCo-approved)',status:'Not Started',owner:'RA/Partner',start:'2026-06-21',end:'2026-09-17',dur:'~3 mos',output:''},
+    {num:'4.3',task:'Execute negotiation strategies (Partner-led; PortCo-approved)',status:'In Progress',owner:'RA/Partner',start:'2026-06-21',end:'2026-09-17',dur:'~3 mos',output:''},
     {num:'4.4',task:'Implement concessions + confirm realization (billing/seats/terms)',status:'Not Started',owner:'RA/Partner',start:'2026-09-20',end:'2026-10-08',dur:'3 wks',output:'Signed amendments + realized savings log'},
     {num:'4.5',task:'Manage & track savings (weekly cadence + Finance validation)',status:'Not Started',owner:'RA/Partner',start:'2026-06-21',end:'',dur:'Ongoing',output:''},
     {num:'4.6',task:'Pilot closeout readout + scale decision package (AGM/IC)',status:'Not Started',owner:'RA/Partner',start:'2026-10-11',end:'2026-10-22',dur:'2 wks',output:'AGM/IC deck + validated savings + scale plan'},
@@ -1232,12 +1233,12 @@ const primePhases=[
     {num:'1.4',task:'Document current discount levels (% off list, volume tiers, bundled pricing) and key contract terms',status:'Complete',owner:'RA',start:'2026-04-06',end:'2026-04-10',dur:'5d',output:'Pricing detail log: discount %, effective dates, renewal terms'},
     {num:'1u',task:'Current state vendor inventory and pricing baseline complete — One Slide + SharePoint docs · Apr 10, 2026',milestone:true},
   ]},
-  {title:'Preferred Vendor Gap Analysis & One-Pager Content Design',status:'Not Started',dates:'Apr 13 – May 8, 2026 · 3 Weeks',tasks:[
+  {title:'Preferred Vendor Gap Analysis & One-Pager Content Design',status:'In Progress',dates:'Apr 13 – May 8, 2026 · 3 Weeks',tasks:[
     {num:'2.1',task:"Define desired end-state vendor coverage: identify target vendors where Sunstone should have preferred pricing but doesn't",status:'In Progress',owner:'RA',start:'2026-04-13',end:'2026-04-17',dur:'5d',output:'Gap analysis: target vendor wish list with rationale + priority ranking'},
-    {num:'2.2',task:'Gather select CFO feedback (2–3) on draft desired end-state to gauge PortCo demand',status:'In Progress',owner:'RA',start:'2026-04-20',end:'2026-04-24',dur:'5d',output:'Future state vendor list refined with PortCo input'},
+    {num:'2.2',task:'Gather select CFO feedback (2–3) on draft desired end-state to gauge PortCo demand',status:'On Hold',owner:'RA',start:'2026-04-20',end:'2026-04-24',dur:'5d',output:'Future state vendor list refined with PortCo input'},
     {num:'2.2u',task:'Future state preferred vendor inventory complete · Apr 24, 2026',milestone:true},
-    {num:'2.3',task:'Design one-pager content and layout: fields, categories, discount %, contact, renewal date',status:'Not Started',owner:'RA',start:'2026-04-27',end:'2026-05-01',dur:'5d',output:'Draft one-pager template with agreed-upon fields and layout'},
-    {num:'2.4',task:'Align with Sean on categorization framework and prioritization criteria',status:'Not Started',owner:'RA/SL',start:'2026-05-04',end:'2026-05-08',dur:'5d',output:'Approved taxonomy + content decisions documented'},
+    {num:'2.3',task:'Design one-pager content and layout: fields, categories, discount %, contact, renewal date',status:'Complete',owner:'RA',start:'2026-04-27',end:'2026-05-01',dur:'5d',output:'Draft one-pager template with agreed-upon fields and layout'},
+    {num:'2.4',task:'Align with Sean on categorization framework and prioritization criteria',status:'Complete',owner:'RA/SL',start:'2026-05-04',end:'2026-05-08',dur:'5d',output:'Approved taxonomy + content decisions documented'},
     {num:'2u',task:'Gap analysis complete; one-pager template and content framework approved · May 8, 2026',milestone:true},
   ]},
   {title:'Preferred Vendor Outreach, Negotiation & Final One-Pager Delivery',status:'Not Started',dates:'May 11 – Jun 16, 2026 · 4 Weeks',tasks:[
