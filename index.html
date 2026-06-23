@@ -512,10 +512,10 @@ const STATUS_OPTS = ['Not Started','In Progress','On Hold','Complete','Blocked',
 // DATA — Portfolio programs (editable via Full Year)
 // ═══════════════════════════════════════════════════════════════
 const portfolioPrograms = [
-  {id:'cost-out',num:1,name:'Sunstone Edge Program (Cost Out)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Visibility',alloc:[0,0.05,0.3,0.4,0.5,0.5,0.3,0.2,0.15,0.1,0.1,0.1],tab:'cost-out'},
-  {id:'prime',num:2,name:'Sunstone Prime Program (Preferred Vendors)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Reduced Deal Team Time',alloc:[0,0,0.1,0.15,0.1,0.1,0.1,0.05,0.05,0.05,0.05,0],tab:'prime'},
+  {id:'cost-out',num:1,name:'Sunstone Edge Program (Cost Out)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Visibility',alloc:[0,0.05,0.3,0.4,0.5,0.5,0.5,0.3,0.2,0.05,0.1,0.1],tab:'cost-out'},
+  {id:'prime',num:2,name:'Sunstone Prime Program (Preferred Vendors)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Reduced Deal Team Time',alloc:[0,0,0.1,0.15,0.1,0.1,0.1,0.05,0.05,0,0.05,0.05],tab:'prime'},
   {id:'ai-close',num:3,name:'AI Close Acceleration Challenge',cat:'Finance Modernization',co:'Portfolio-Wide',pri:'A',status:'Placeholder',drivers:'Visibility, Exit Readiness, Margin Expansion',alloc:[0,0,0,0,0,0,0,0,0.05,0.15,0.1,0.05],tab:'ai-close'},
-  {id:'budget',num:4,name:'2027 Budget Process',cat:'Performance Monitoring',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Risk Management, Exit Readiness',alloc:[0,0,0,0,0,0,0,0,0.3,0.2,0.2,0.2],tab:'budget'},
+  {id:'budget',num:4,name:'2027 Budget Process',cat:'Performance Monitoring',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Risk Management, Exit Readiness',alloc:[0,0,0,0,0,0,0,0.2,0.3,0.05,0.2,0.2],tab:'budget'},
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -523,11 +523,11 @@ const portfolioPrograms = [
 // ═══════════════════════════════════════════════════════════════
 let otherRows = [
   {section:'PORTCO ENGAGEMENTS'},
-  {id:'r5',num:5,name:'NetSuite Implementation',cat:'Finance Modernization',co:'TelliHealth',pri:'A',status:'In Progress',alloc:[0.4,0.3,0.1,0.05,0.1,0.1,0.05,0,0,0,0,0]},
+  {id:'r5',num:5,name:'NetSuite Implementation',cat:'Finance Modernization',co:'TelliHealth',pri:'A',status:'In Progress',alloc:[0.4,0.3,0.1,0.05,0.05,0.05,0.05,0,0,0,0,0]},
   {id:'r6',num:6,name:'Back Office Staffing (Controller)',cat:'Post-Close Onboarding',co:'TelliHealth',pri:'C',status:'Complete',alloc:[0,0.1,0.1,0.1,0.05,0,0,0,0,0,0,0]},
   {id:'r7',num:7,name:'Monthly Reporting Standup',cat:'Post-Close Onboarding',co:'Clearwater',pri:'A',status:'Complete',alloc:[0.05,0.05,0.05,0,0,0,0,0,0,0,0,0]},
-  {id:'r8',num:8,name:'Post-Close Onboarding: Peloton',cat:'Post-Close Onboarding',co:'Peloton',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0.2,0.2,0.2,0,0,0,0]},
-  {id:'r9',num:9,name:'Post-Close Onboarding: Placeholder',cat:'Post-Close Onboarding',co:'TBD',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0,0,0.2,0.2,0.2,0.2,0.2]},
+  {id:'r8',num:8,name:'Post-Close Onboarding: Peloton',cat:'Post-Close Onboarding',co:'Peloton',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0.1,0.2,0.2,0,0,0,0]},
+  {id:'r9',num:9,name:'Post-Close Onboarding: Placeholder',cat:'Post-Close Onboarding',co:'TBD',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0,0,0,0.2,0.05,0.2,0.2]},
   {section:'RECURRING INTERNAL WORK'},
   {id:'r10',num:10,name:'Portfolio Data Ingestion & Benchmarking',cat:'Sunstone Portfolio Reporting',co:'Internal',pri:'B',status:'In Progress',alloc:[0.15,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]},
   {id:'r11',num:11,name:'Ad-Hoc Benchmarking & Analysis',cat:'Sunstone Portfolio Reporting',co:'Internal',pri:'A',status:'Placeholder',alloc:[0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05]},
