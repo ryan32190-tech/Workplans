@@ -279,7 +279,7 @@ input,select,textarea,button{font-family:var(--fb);}
     <button class="tb" onclick="showTab('full-year')">Full Year</button>
   </div>
   <span class="hd-date" id="hd-date"></span>
-  <button onclick="exportSnapshot()" style="background:var(--orange);color:#fff;border:none;border-radius:6px;padding:0 16px;height:32px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">⬇ Save Snapshot</button>
+  <button onclick="exportSnapshot()" style="background:var(--orange);color:#fff;border:none;border-radius:6px;padding:0 16px;height:32px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">⬇ Download index.html</button>
 </div>
 
 <div class="ct">
@@ -1358,62 +1358,83 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ═══════════════════════════════════════════════════════════════
 // EXPORT — bake all live data back into HTML and download
 // ═══════════════════════════════════════════════════════════════
-function exportSnapshot(){
-  // 1. Grab the current HTML source
-  let html = document.documentElement.outerHTML;
-
-  // 2. Serialize live data objects as JSON
-  const snap = {
-    portfolioPrograms: portfolioPrograms,
-    otherRows: otherRows,
-    logs: logs,
-    exportedAt: new Date().toISOString()
-  };
-  const snapJson = JSON.stringify(snap).replace(/</g,'\u003c').replace(/>/g,'\u003e');
-
-  // 3. Inject a <script> block right before </body> that restores
-  //    the data on next load, overwriting the defaults
-  const restoreScript = `<script id="snapshot-restore">
-(function(){
-  const snap = ${snapJson};
-  // Patch portfolioPrograms in-place so alloc + status are restored
-  snap.portfolioPrograms.forEach(function(sp){
-    const p = portfolioPrograms.find(function(x){return x.id===sp.id;});
-    if(p){ p.alloc=sp.alloc; p.status=sp.status; p.cat=sp.cat; p.co=sp.co; p.pri=sp.pri; }
-  });
-  // Restore otherRows entirely (handles added/deleted rows)
-  otherRows.length=0;
-  snap.otherRows.forEach(function(r){ otherRows.push(r); });
-  // Restore logs
-  Object.keys(snap.logs).forEach(function(k){ logs[k]=snap.logs[k]; });
-  // Re-render after restore
-  document.addEventListener('DOMContentLoaded',function(){
-    Object.keys(logs).forEach(renderLog);
-    renderDashboard();
-  },{once:true});
-})();
-<\/script>`;
-
-  // 4. Remove any previous snapshot-restore block so we don't stack them
-  html = html.replace(/<script id="snapshot-restore">[\s\S]*?<\/script>/g, '');
-
-  // 5. Insert restore script just before </body>
-  html = html.replace('</body>', restoreScript + '\n</body>');
-
-  // 6. Trigger download
-  const ts = new Date().toISOString().slice(0,10);
-  const fname = 'Sunstone_2026_Tracker_' + ts + '.html';
-  const blob = new Blob([html], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = fname;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-
-  // 7. Flash confirmation
+async function exportSnapshot(){
   const btn = document.querySelector('[onclick="exportSnapshot()"]');
-  if(btn){ const orig=btn.innerHTML; btn.innerHTML='✓ Saved!'; btn.style.background='#2D7A10'; setTimeout(()=>{ btn.innerHTML=orig; btn.style.background='var(--orange)'; },2000); }
+  try {
+    // 1. Capture live phase/task statuses from the DOM into the phase data objects
+    //    (phase selects + task selects aren't stored in JS vars, so read them now)
+    function capturePhases(containerId, phases){
+      phases.forEach((ph,pi)=>{
+        const phId=containerId+'-ph'+pi;
+        const hdr=document.querySelector(`#${phId}-body`)?.previousElementSibling;
+        const phSel=hdr?.querySelector('.st-sel');
+        if(phSel) ph.status=phSel.value;
+        const rows=document.querySelectorAll(`#${phId}-body tbody tr`);
+        let ti=0;
+        ph.tasks.forEach(t=>{
+          if(t.milestone){ return; }
+          const row=rows[ti];
+          if(row){
+            const stSel=row.querySelector('.t-st-sel');
+            const ownSel=row.querySelector('.t-owner-sel');
+            const dates=row.querySelectorAll('.t-date-inp');
+            const dur=row.querySelector('.t-dur');
+            if(stSel) t.status=stSel.value;
+            if(ownSel) t.owner=ownSel.value;
+            if(dates[0]) t.start=dates[0].value;
+            if(dates[1]) t.end=dates[1].value;
+            if(dur) t.dur=dur.textContent;
+          }
+          ti++;
+        });
+      });
+    }
+    capturePhases('cost-phase-container',costPhases);
+    capturePhases('prime-phase-container',primePhases);
+    capturePhases('ai-phase-container',aiPhases);
+    capturePhases('budget-phase-container',budgetPhases);
+
+    // 2. Fetch this page's own clean source file
+    let html = await (await fetch(window.location.href, {cache:'no-store'})).text();
+
+    // 3. Helper to serialize a JS data array back to source form
+    function serializeArr(arr){
+      return JSON.stringify(arr)
+        .replace(/"([a-zA-Z0-9_]+)":/g, '$1:'); // unquote keys to match source style
+    }
+
+    // 4. Replace each data block in the source via regex on the const declarations
+    function replaceConst(src, name, declarator, value){
+      const re = new RegExp('(' + declarator + '\\s+' + name + '\\s*=\\s*)\\[[\\s\\S]*?\\](;)');
+      return src.replace(re, '$1' + value + '$2');
+    }
+
+    html = replaceConst(html, 'portfolioPrograms', 'const', serializeArr(portfolioPrograms));
+    html = replaceConst(html, 'otherRows', 'let',   serializeArr(otherRows));
+    html = replaceConst(html, 'costPhases', 'const', serializeArr(costPhases));
+    html = replaceConst(html, 'primePhases','const', serializeArr(primePhases));
+    html = replaceConst(html, 'aiPhases',   'const', serializeArr(aiPhases));
+    html = replaceConst(html, 'budgetPhases','const',serializeArr(budgetPhases));
+
+    // 5. Replace logs object
+    const logsRe = /(let\s+logs\s*=\s*)\{[\s\S]*?\}(;)/;
+    html = html.replace(logsRe, '$1' + JSON.stringify(logs).replace(/"([a-zA-Z0-9_]+)":/g,'$1:') + '$2');
+
+    // 6. Download as index.html
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'index.html';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    if(btn){ const orig=btn.innerHTML; btn.innerHTML='\u2713 Downloaded index.html'; btn.style.background='#2D7A10'; setTimeout(()=>{ btn.innerHTML=orig; btn.style.background='var(--orange)'; },2500); }
+  } catch(e){
+    console.error('Export failed:', e);
+    if(btn){ const orig=btn.innerHTML; btn.innerHTML='\u2717 Export failed'; btn.style.background='#C0392B'; setTimeout(()=>{ btn.innerHTML=orig; btn.style.background='var(--orange)'; },2500); }
+    alert('Export failed — this can happen when opening the file locally (file://). It works when the page is served from GitHub Pages. Error: ' + e.message);
+  }
 }
 
 </script>
