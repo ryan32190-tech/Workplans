@@ -333,6 +333,30 @@ input,select,textarea,button{font-family:var(--fb);}
   <div class="card">
     <div class="card-hdr" style="background:#1A1A1A;">
       <div><div class="card-title" style="color:#FFFFFF;">2026 Initiatives</div></div>
+      <div class="card-hdr-r" style="gap:10px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:10px;font-weight:600;color:#A8A8A8;text-transform:uppercase;letter-spacing:.05em;">Status</span>
+          <select id="filter-status" onchange="applyDashFilter()" style="font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;border:1px solid #3A3A3A;background:#2A2A2A;color:#F0EDE8;cursor:pointer;outline:none;">
+            <option value="">All</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Not Started">Not Started</option>
+            <option value="On Hold">On Hold</option>
+            <option value="Complete">Complete</option>
+            <option value="Blocked">Blocked</option>
+            <option value="Placeholder">Placeholder</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:10px;font-weight:600;color:#A8A8A8;text-transform:uppercase;letter-spacing:.05em;">Priority</span>
+          <select id="filter-priority" onchange="applyDashFilter()" style="font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;border:1px solid #3A3A3A;background:#2A2A2A;color:#F0EDE8;cursor:pointer;outline:none;">
+            <option value="">All</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+          </select>
+        </div>
+        <button onclick="clearDashFilter()" id="filter-clear" style="font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;border:1px solid #3A3A3A;background:transparent;color:#A8A8A8;cursor:pointer;outline:none;display:none;">Clear</button>
+      </div>
     </div>
     <div class="overflow-x">
       <table class="prog-tbl" id="dash-port-tbl">
@@ -496,29 +520,12 @@ const STATUS_OPTS = ['Not Started','In Progress','On Hold','Complete','Blocked',
 // ═══════════════════════════════════════════════════════════════
 // DATA — Portfolio programs (editable via Full Year)
 // ═══════════════════════════════════════════════════════════════
-const portfolioPrograms = [
-  {id:'cost-out',num:1,name:'Cost Optimization',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Visibility',alloc:[0,0.05,0.3,0.4,0.5,0.5,0.5,0.3,0.2,0.05,0.1,0.1],tab:'cost-out'},
-  {id:'prime',num:2,name:'Sunstone Prime Program (Preferred Vendors)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Reduced Deal Team Time',alloc:[0,0,0.1,0.15,0.1,0.1,0.1,0.05,0.05,0,0.05,0.05],tab:'prime'},
-  {id:'budget',num:3,name:'2027 Budget Process',cat:'Performance Monitoring',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Risk Management, Exit Readiness',alloc:[0,0,0,0,0,0,0,0.2,0.3,0.05,0.2,0.2],tab:'budget'},
-];
+const portfolioPrograms = [{id:"cost-out",num:1,name:"Cost Optimization",cat:"Cost Optimization & M&A Integration",co:"Portfolio-Wide",pri:"A",status:"In Progress",drivers:"Margin Expansion, Visibility",alloc:[0,0.05,0.3,0.4,0.5,0.5,0.5,0.3,0.1,0.1,0.4,0.4],tab:"cost-out"},{id:"prime",num:2,name:"Sunstone Prime Program (Preferred Vendors)",cat:"Cost Optimization & M&A Integration",co:"Portfolio-Wide",pri:"A",status:"On Hold",drivers:"Margin Expansion, Reduced Deal Team Time",alloc:[0,0,0.1,0.15,0.1,0.1,0.1,0.05,0.05,0,0.05,0.05],tab:"prime"},{id:"budget",num:3,name:"2027 Budget Process",cat:"Performance Monitoring",co:"Portfolio-Wide",pri:"A",status:"In Progress",drivers:"Visibility, Risk Management, Exit Readiness",alloc:[0,0,0,0,0,0,0,0.2,0.1,0.1,0.1,0.1],tab:"budget"}];
 
 // ═══════════════════════════════════════════════════════════════
 // DATA — Other rows (editable via Full Year)
 // ═══════════════════════════════════════════════════════════════
-let otherRows = [
-  {section:'PORTCO ENGAGEMENTS'},
-  {id:'rcfo',num:4,name:'Interim CFO',cat:'Fractional Leadership',co:'TBD',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0,0,0,0,0,0,0]},
-  {id:'r5',num:5,name:'NetSuite Implementation',cat:'Finance Modernization',co:'TelliHealth',pri:'A',status:'In Progress',alloc:[0.4,0.3,0.1,0.05,0.05,0.05,0.05,0,0,0,0,0]},
-  {id:'r6',num:6,name:'Back Office Staffing (Controller)',cat:'Post-Close Onboarding',co:'TelliHealth',pri:'C',status:'Complete',alloc:[0,0.1,0.1,0.1,0.05,0,0,0,0,0,0,0]},
-  {id:'r7',num:7,name:'Monthly Reporting Standup',cat:'Post-Close Onboarding',co:'Clearwater',pri:'A',status:'Complete',alloc:[0.05,0.05,0.05,0,0,0,0,0,0,0,0,0]},
-  {id:'r8',num:8,name:'Post-Close Onboarding: Peloton',cat:'Post-Close Onboarding',co:'Peloton',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0.1,0.2,0.2,0,0,0,0]},
-  {id:'r9',num:9,name:'Post-Close Onboarding: Placeholder',cat:'Post-Close Onboarding',co:'TBD',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0,0,0,0.2,0.05,0.2,0.2]},
-  {section:'RECURRING INTERNAL WORK'},
-  {id:'r10',num:10,name:'Portfolio Data Ingestion & Benchmarking',cat:'Sunstone Portfolio Reporting',co:'Internal',pri:'B',status:'In Progress',alloc:[0.15,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]},
-  {id:'r11',num:11,name:'Ad-Hoc Benchmarking & Analysis',cat:'Sunstone Portfolio Reporting',co:'Internal',pri:'A',status:'Placeholder',alloc:[0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05]},
-  {section:'OTHER'},
-  {id:'r12',num:12,name:'POG / FinOps Collateral & Capability Slides',cat:'Other Internal',co:'Internal',pri:'B',status:'In Progress',alloc:[0.2,0.2,0.15,0.1,0,0,0,0,0,0,0,0]},
-];
+let otherRows = [{section:"PORTCO ENGAGEMENTS"},{id:"rcfo",num:4,name:"Interim CFO",cat:"Fractional Leadership",co:"Vcheck",pri:"A",status:"In Progress",alloc:[0,0,0,0,0,0,0,0,0.7,0.7,0,0]},{id:"r5",num:5,name:"NetSuite Implementation",cat:"Finance Modernization",co:"TelliHealth",pri:"A",status:"Complete",alloc:[0.4,0.3,0.1,0.05,0.05,0.05,0.05,0,0,0,0,0]},{id:"r6",num:6,name:"Back Office Staffing (Controller)",cat:"Post-Close Onboarding",co:"TelliHealth",pri:"C",status:"Complete",alloc:[0,0.1,0.1,0.1,0.05,0,0,0,0,0,0,0]},{id:"r7",num:7,name:"Monthly Reporting Standup",cat:"Post-Close Onboarding",co:"Clearwater",pri:"A",status:"Complete",alloc:[0.05,0.05,0.05,0,0,0,0,0,0,0,0,0]},{id:"r8",num:8,name:"Post-Close Onboarding: Peloton",cat:"Post-Close Onboarding",co:"Peloton",pri:"A",status:"Complete",alloc:[0,0,0,0,0,0.1,0.2,0.2,0,0,0,0]},{id:"r9",num:9,name:"Post-Close Onboarding: Placeholder",cat:"Post-Close Onboarding",co:"TBD",pri:"A",status:"Placeholder",alloc:[0,0,0,0,0,0,0,0,0,0,0.2,0.2]},{section:"RECURRING INTERNAL WORK"},{id:"r10",num:10,name:"Portfolio Data Ingestion & Benchmarking",cat:"Sunstone Portfolio Reporting",co:"Internal",pri:"B",status:"In Progress",alloc:[0.15,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]},{id:"r11",num:11,name:"Ad-Hoc Benchmarking & Analysis",cat:"Sunstone Portfolio Reporting",co:"Internal",pri:"A",status:"Placeholder",alloc:[0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05]},{section:"OTHER"},{id:"r12",num:12,name:"POG / FinOps Collateral & Capability Slides",cat:"Other Internal",co:"Internal",pri:"B",status:"On Hold",alloc:[0.2,0.2,0.15,0.1,0,0,0,0,0,0,0,0]}];
 
 let logs = {dash:[],fy:[],cost:[],prime:[],ai:[],budget:[]};
 
@@ -796,13 +803,13 @@ function renderDashboard(){
     ptbody.innerHTML='';
 
     // Portfolio-Wide section header row
-    ptbody.innerHTML+=`<tr class="section-row"><td colspan="19">PORTFOLIO-WIDE PROGRAMS <span style="font-size:9px;font-weight:400;color:rgba(255,255,255,0.65);text-transform:none;letter-spacing:.02em;margin-left:10px;">Status syncs to/from individual workplans · Click name to open</span></td></tr>`;
+    ptbody.innerHTML+=`<tr class="section-row dash-section-row" data-section="PORTFOLIO-WIDE PROGRAMS"><td colspan="19">PORTFOLIO-WIDE PROGRAMS <span style="font-size:9px;font-weight:400;color:rgba(255,255,255,0.65);text-transform:none;letter-spacing:.02em;margin-left:10px;">Status syncs to/from individual workplans · Click name to open</span></td></tr>`;
 
     // Portfolio-Wide rows
     portfolioPrograms.forEach(p=>{
       const avg=p.alloc.reduce((a,b)=>a+b,0)/12;
       const moCells=MO.map((m,i)=>mcReadCell(p.alloc[i],m)).join('');
-      ptbody.innerHTML+=`<tr>
+      ptbody.innerHTML+=`<tr class="dash-data-row" data-status="${p.status}" data-priority="${p.pri}" data-section="PORTFOLIO-WIDE PROGRAMS">
         <td style="font-size:11px;font-weight:700;color:var(--ink3);">${p.num}</td>
         <td class="prog-name"><a class="prog-link" onclick="showTab('${p.tab}')">${p.name}</a><div class="prog-sub">${p.drivers}</div></td>
         <td style="font-size:11px;color:var(--ink3);">${p.cat}</td>
@@ -815,11 +822,12 @@ function renderDashboard(){
     });
 
     // Other rows (Portco Engagements, Recurring Internal, Other)
+    let curSection='';
     otherRows.forEach(item=>{
-      if(item.section){ ptbody.innerHTML+=`<tr class="section-row"><td colspan="19">${item.section}</td></tr>`; return; }
+      if(item.section){ curSection=item.section; ptbody.innerHTML+=`<tr class="section-row dash-section-row" data-section="${item.section}"><td colspan="19">${item.section}</td></tr>`; return; }
       const avg=item.alloc.reduce((a,b)=>a+b,0)/12;
       const moCells=MO.map((m,i)=>mcReadCell(item.alloc[i],m)).join('');
-      ptbody.innerHTML+=`<tr>
+      ptbody.innerHTML+=`<tr class="dash-data-row" data-status="${item.status}" data-priority="${item.pri}" data-section="${curSection}">
         <td style="font-size:11px;font-weight:700;color:var(--ink3);">${item.num}</td>
         <td class="prog-name">${item.name}</td>
         <td style="font-size:11px;color:var(--ink3);">${item.cat}</td>
@@ -834,14 +842,65 @@ function renderDashboard(){
     // Spacer + Grand total + Available capacity
     const grand=computeTotals();
     const grandAvg=grand.reduce((a,b)=>a+b,0)/12;
-    ptbody.innerHTML+=`<tr><td colspan="19" style="height:10px;background:#F6F4F2;border-top:2px solid #44546A;padding:0;"></td></tr>`;
-    ptbody.innerHTML+=`<tr class="total-row"><td colspan="6" style="padding:10px 12px;font-size:11px;letter-spacing:.06em;">TOTAL TIME ALLOCATION</td>${grand.map(v=>{const p=Math.round(v*100);const cv=v>1?'#FF6B6B':v>0.85?'#F59E0B':'#FCDEC8';return`<td style="text-align:center;font-size:10px;font-weight:700;color:${cv};padding:8px 2px;">${p}%</td>`;}).join('')}<td style="text-align:center;font-weight:700;font-size:11px;color:#FCDEC8;">${Math.round(grandAvg*100)}%</td></tr>`;
-    ptbody.innerHTML+=`<tr style="background:#ffffff;"><td colspan="6" style="padding:8px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;color:#1A1A1A;text-transform:uppercase;">AVAILABLE CAPACITY</td>${grand.map(v=>{const r=Math.round((1-v)*100);const col=r<0?'#C0392B':r===0?'#1A1A1A':'#2D7A10';return`<td style="text-align:center;font-size:10px;font-weight:700;color:${col};padding:8px 2px;">${r>0?'+':''}${r}%</td>`;}).join('')}<td style="text-align:center;font-size:11px;font-weight:700;color:${Math.round((1-grandAvg)*100)<0?'#C0392B':Math.round((1-grandAvg)*100)===0?'#1A1A1A':'#2D7A10'};">${Math.round((1-grandAvg)*100)>0?'+':''}${Math.round((1-grandAvg)*100)}%</td></tr>`;
+    ptbody.innerHTML+=`<tr class="dash-totals-row"><td colspan="19" style="height:10px;background:#F6F4F2;border-top:2px solid #44546A;padding:0;"></td></tr>`;
+    ptbody.innerHTML+=`<tr class="total-row dash-totals-row"><td colspan="6" style="padding:10px 12px;font-size:11px;letter-spacing:.06em;">TOTAL TIME ALLOCATION</td>${grand.map(v=>{const p=Math.round(v*100);const cv=v>1?'#FF6B6B':v>0.85?'#F59E0B':'#FCDEC8';return`<td style="text-align:center;font-size:10px;font-weight:700;color:${cv};padding:8px 2px;">${p}%</td>`;}).join('')}<td style="text-align:center;font-weight:700;font-size:11px;color:#FCDEC8;">${Math.round(grandAvg*100)}%</td></tr>`;
+    ptbody.innerHTML+=`<tr class="dash-totals-row" style="background:#ffffff;"><td colspan="6" style="padding:8px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;color:#1A1A1A;text-transform:uppercase;">AVAILABLE CAPACITY</td>${grand.map(v=>{const r=Math.round((1-v)*100);const col=r<0?'#C0392B':r===0?'#1A1A1A':'#2D7A10';return`<td style="text-align:center;font-size:10px;font-weight:700;color:${col};padding:8px 2px;">${r>0?'+':''}${r}%</td>`;}).join('')}<td style="text-align:center;font-size:11px;font-weight:700;color:${Math.round((1-grandAvg)*100)<0?'#C0392B':Math.round((1-grandAvg)*100)===0?'#1A1A1A':'#2D7A10'};">${Math.round((1-grandAvg)*100)>0?'+':''}${Math.round((1-grandAvg)*100)}%</td></tr>`;
   }
 
   // Legend
   const legendEl=document.getElementById('dash-legend-row');
   if(legendEl) legendEl.innerHTML=`<span style="font-weight:600;color:var(--ink2);">Gradient key:</span><span class="leg-item"><span class="leg-dot" style="background:var(--g1)"></span>1–9%</span><span class="leg-item"><span class="leg-dot" style="background:var(--g2)"></span>10–19%</span><span class="leg-item"><span class="leg-dot" style="background:var(--g3)"></span>20–29%</span><span class="leg-item"><span class="leg-dot" style="background:var(--g4)"></span>30–39%</span><span class="leg-item"><span class="leg-dot" style="background:var(--g5)"></span>40%+</span>`;
+
+  // Re-apply any active filter after re-render
+  applyDashFilter();
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD FILTER (status + priority)
+// ═══════════════════════════════════════════════════════════════
+function applyDashFilter(){
+  const statusF = document.getElementById('filter-status')?.value || '';
+  const priF = document.getElementById('filter-priority')?.value || '';
+  const active = statusF || priF;
+
+  const tbody = document.getElementById('dash-port-tbody');
+  if(!tbody) return;
+
+  // Show/hide data rows based on filter
+  tbody.querySelectorAll('.dash-data-row').forEach(row=>{
+    const st = row.getAttribute('data-status');
+    const pr = row.getAttribute('data-priority');
+    const match = (!statusF || st===statusF) && (!priF || pr===priF);
+    row.style.display = match ? '' : 'none';
+  });
+
+  // Section headers: hide if no visible data rows follow in that section
+  tbody.querySelectorAll('.dash-section-row').forEach(sec=>{
+    const secName = sec.getAttribute('data-section');
+    const hasVisible = [...tbody.querySelectorAll(`.dash-data-row[data-section="${secName}"]`)]
+      .some(r=>r.style.display !== 'none');
+    sec.style.display = hasVisible ? '' : 'none';
+  });
+
+  // Totals/available rows: hide when a filter is active (they'd be misleading)
+  tbody.querySelectorAll('.dash-totals-row').forEach(r=>{
+    r.style.display = active ? 'none' : '';
+  });
+
+  // Show/hide Clear button
+  const clearBtn = document.getElementById('filter-clear');
+  if(clearBtn) clearBtn.style.display = active ? 'inline-block' : 'none';
+
+  // Hide the gradient legend row when filtering (totals hidden anyway)
+  const legend = document.getElementById('dash-legend-row');
+  if(legend) legend.style.opacity = active ? '0.5' : '1';
+}
+
+function clearDashFilter(){
+  const s=document.getElementById('filter-status'); if(s) s.value='';
+  const p=document.getElementById('filter-priority'); if(p) p.value='';
+  applyDashFilter();
 }
 
 // ── Pie chart helpers ──────────────────────────────────────────
@@ -1171,93 +1230,12 @@ function togglePhase(id){
 }
 
 // ─── Cost Out Phases ───────────────────────────────────────────
-const costPhases=[
-  {title:'Project Definition, Validation & Launch',status:'Complete',dates:'Feb 23 – Mar 13, 2026 · 3 Wks',tasks:[
-    {num:'1.1',task:'Partner short list, key questions and intros',status:'Complete',owner:'RA',start:'2026-02-23',end:'2026-02-27',dur:'5d',output:'Shortlist + intro calls completed'},
-    {num:'1.2',task:'NDAs signed; share high-level portfolio spend',status:'Complete',owner:'RA',start:'2026-03-02',end:'2026-03-06',dur:'5d',output:'Clean high-level portfolio spend overview'},
-    {num:'1.3',task:'Define approach by spend bucket; continued partner discussions; confirm universal vendor spend cube template',status:'Complete',owner:'RA',start:'2026-03-09',end:'2026-03-13',dur:'5d',output:'Refined plan of attack + universal template'},
-    {num:'1u',task:'RA+SL Phase 2 Go/No-Go decision · Mar 13, 2026',milestone:true},
-  ]},
-  {title:'Securing Sunstone Alignment & Engaging Portfolio',status:'Complete',dates:'Mar 16 – Apr 24, 2026 · 6 Wks',tasks:[
-    {num:'2.1',task:'Build tight decision deck for FLT (rationale, pilot cohort, partner fee/model, governance, expected savings range)',status:'Complete',owner:'RA',start:'2026-03-16',end:'2026-03-27',dur:'12d',output:'Decision deck for partners'},
-    {num:'2.2',task:'POG presentation to partners',status:'Complete',owner:'SL',start:'2026-03-30',end:'2026-03-30',dur:'1d',output:''},
-    {num:'2.2u',task:'Partner Go/No-Go sign-off · Mar 30, 2026 · Explicit decision + approved next-step timeline',milestone:true},
-    {num:'2.3',task:'Iterate presentation as needed',status:'Complete',owner:'RA',start:'2026-03-30',end:'2026-04-03',dur:'5d',output:''},
-    {num:'2.4',task:'POG presentation to IC',status:'Complete',owner:'RA',start:'2026-04-06',end:'2026-04-06',dur:'1d',output:''},
-    {num:'2.5',task:'CFO outreach with presentation; distribute vendor spend template w/ 10-day turnaround ask',status:'Complete',owner:'RA',start:'2026-04-06',end:'2026-04-17',dur:'12d',output:'CFO alignment + confirmed pilot candidates'},
-    {num:'2.6',task:'Ongoing FinOps assistance for PortCos re: the data ask',status:'Complete',owner:'RA/AGMAJ',start:'2026-04-20',end:'2026-04-24',dur:'5d',output:''},
-  ]},
-  {title:'Identifying Cost Opportunities & Selecting Partner Strategy',status:'Complete',dates:'Apr 27 – May 29, 2026 · 4 Wks',tasks:[
-    {num:'3.1',task:'Receive data from CFOs; distribute to partners (2) with tight turnaround for bounded proposals',status:'Complete',owner:'RA',start:'2026-04-27',end:'2026-05-01',dur:'5d',output:''},
-    {num:'3.2',task:'Receive, review and score/summarize proposals',status:'Complete',owner:'RA',start:'2026-05-04',end:'2026-05-08',dur:'5d',output:'Bounded partner proposals + pilot plan'},
-    {num:'3.3',task:'Finalize partner strategy (who and how)',status:'Complete',owner:'RA',start:'2026-05-11',end:'2026-05-15',dur:'5d',output:''},
-    {num:'3.4',task:'Create portfolio-specific and portfolio-wide cost-out tracker',status:'Complete',owner:'RA/Partner',start:'2026-05-18',end:'2026-05-22',dur:'5d',output:''},
-    {num:'3.5',task:'Finalize plan with partner, modify agreement as needed, and sign',status:'Complete',owner:'RA',start:'2026-05-25',end:'2026-05-29',dur:'5d',output:''},
-    {num:'3.5u',task:'Partner strategy terms and execution plans finalized · May 29, 2026',milestone:true},
-  ]},
-  {title:'Negotiate and Implement Initial Cost Savings',status:'In Progress',dates:'Jun 1 – Oct 22, 2026 · 5 Months',tasks:[
-    {num:'4.1',task:'Kickoff alignment calls (Sunstone + Partner + CFOs/POCs)',status:'In Progress',owner:'RA/Partner',start:'2026-06-01',end:'2026-06-12',dur:'2 wks',output:'Vendor scope confirmed + weekly cadence set'},
-    {num:'4.2',task:'Targeted data follow-ups + QA',status:'In Progress',owner:'RA/Partner',start:'2026-06-15',end:'2026-06-18',dur:'4d',output:''},
-    {num:'4.2u',task:'Negotiation plans, process and inputs complete; execution & tracking begins · Jun 18',milestone:true},
-    {num:'4.3',task:'Execute negotiation strategies (Partner-led; PortCo-approved)',status:'In Progress',owner:'RA/Partner',start:'2026-06-21',end:'2026-09-17',dur:'~3 mos',output:''},
-    {num:'4.4',task:'Implement concessions + confirm realization (billing/seats/terms)',status:'Not Started',owner:'RA/Partner',start:'2026-09-20',end:'2026-10-08',dur:'3 wks',output:'Signed amendments + realized savings log'},
-    {num:'4.5',task:'Manage & track savings (weekly cadence + Finance validation)',status:'Not Started',owner:'RA/Partner',start:'2026-06-21',end:'',dur:'Ongoing',output:''},
-    {num:'4.6',task:'Pilot closeout readout + scale decision package (AGM/IC)',status:'Not Started',owner:'RA/Partner',start:'2026-10-11',end:'2026-10-22',dur:'2 wks',output:'AGM/IC deck + validated savings + scale plan'},
-    {num:'4.6u',task:'Pilot readout & scale decision (AGM/IC) · Oct 22, 2026',milestone:true},
-  ]},
-];
+const costPhases=[{title:"Project Definition, Validation & Launch",status:"Complete",dates:"Feb 23 – Mar 13, 2026 · 3 Wks",tasks:[{num:"1.1",task:"Partner short list, key questions and intros",status:"Complete",owner:"RA",start:"2026-02-23",end:"2026-02-27",dur:"5d",output:"Shortlist + intro calls completed"},{num:"1.2",task:"NDAs signed; share high-level portfolio spend",status:"Complete",owner:"RA",start:"2026-03-02",end:"2026-03-06",dur:"5d",output:"Clean high-level portfolio spend overview"},{num:"1.3",task:"Define approach by spend bucket; continued partner discussions; confirm universal vendor spend cube template",status:"Complete",owner:"RA",start:"2026-03-09",end:"2026-03-13",dur:"5d",output:"Refined plan of attack + universal template"},{num:"1u",task:"RA+SL Phase 2 Go/No-Go decision · Mar 13, 2026",milestone:true}]},{title:"Securing Sunstone Alignment & Engaging Portfolio",status:"Complete",dates:"Mar 16 – Apr 24, 2026 · 6 Wks",tasks:[{num:"2.1",task:"Build tight decision deck for FLT (rationale, pilot cohort, partner fee/model, governance, expected savings range)",status:"Complete",owner:"RA",start:"2026-03-16",end:"2026-03-27",dur:"12d",output:"Decision deck for partners"},{num:"2.2",task:"POG presentation to partners",status:"Complete",owner:"SL",start:"2026-03-30",end:"2026-03-30",dur:"1d",output:""},{num:"2.2u",task:"Partner Go/No-Go sign-off · Mar 30, 2026 · Explicit decision + approved next-step timeline",milestone:true},{num:"2.3",task:"Iterate presentation as needed",status:"Complete",owner:"RA",start:"2026-03-30",end:"2026-04-03",dur:"5d",output:""},{num:"2.4",task:"POG presentation to IC",status:"Complete",owner:"RA",start:"2026-03-30",end:"2026-04-03",dur:"5d",output:""},{num:"2.5",task:"CFO outreach with presentation; distribute vendor spend template w/ 10-day turnaround ask",status:"Complete",owner:"RA",start:"2026-04-06",end:"2026-04-06",dur:"1d",output:"CFO alignment + confirmed pilot candidates"},{num:"2.6",task:"Ongoing FinOps assistance for PortCos re: the data ask",status:"Complete",owner:"RA",start:"2026-04-06",end:"2026-04-17",dur:"12d",output:""}]},{title:"Identifying Cost Opportunities & Selecting Partner Strategy",status:"Complete",dates:"Apr 27 – May 29, 2026 · 4 Wks",tasks:[{num:"3.1",task:"Receive data from CFOs; distribute to partners (2) with tight turnaround for bounded proposals",status:"Complete",owner:"RA",start:"2026-04-27",end:"2026-05-01",dur:"5d",output:""},{num:"3.2",task:"Receive, review and score/summarize proposals",status:"Complete",owner:"RA",start:"2026-05-04",end:"2026-05-08",dur:"5d",output:"Bounded partner proposals + pilot plan"},{num:"3.3",task:"Finalize partner strategy (who and how)",status:"Complete",owner:"RA",start:"2026-05-11",end:"2026-05-15",dur:"5d",output:""},{num:"3.4",task:"Create portfolio-specific and portfolio-wide cost-out tracker",status:"Complete",owner:"RA/Partner",start:"2026-05-18",end:"2026-05-22",dur:"5d",output:""},{num:"3.5",task:"Finalize plan with partner, modify agreement as needed, and sign",status:"Complete",owner:"RA",start:"2026-05-25",end:"2026-05-29",dur:"5d",output:""},{num:"3.5u",task:"Partner strategy terms and execution plans finalized · May 29, 2026",milestone:true}]},{title:"Negotiate and Implement Initial Cost Savings",status:"In Progress",dates:"Jun 1 – Oct 22, 2026 · 5 Months",tasks:[{num:"4.1",task:"Kickoff alignment calls (Sunstone + Partner + CFOs/POCs)",status:"In Progress",owner:"RA/Partner",start:"2026-06-01",end:"2026-06-12",dur:"2 wks",output:"Vendor scope confirmed + weekly cadence set"},{num:"4.2",task:"Targeted data follow-ups + QA",status:"In Progress",owner:"RA/Partner",start:"2026-06-15",end:"2026-06-18",dur:"4d",output:""},{num:"4.2u",task:"Negotiation plans, process and inputs complete; execution & tracking begins · Jun 18",milestone:true},{num:"4.3",task:"Execute negotiation strategies (Partner-led; PortCo-approved)",status:"In Progress",owner:"RA/Partner",start:"2026-06-21",end:"2026-09-17",dur:"~3 mos",output:""},{num:"4.4",task:"Implement concessions + confirm realization (billing/seats/terms)",status:"In Progress",owner:"RA/Partner",start:"2026-06-21",end:"2026-09-17",dur:"~3 mos",output:"Signed amendments + realized savings log"},{num:"4.5",task:"Manage & track savings (weekly cadence + Finance validation)",status:"Not Started",owner:"RA/Partner",start:"2026-09-20",end:"2026-10-08",dur:"3 wks",output:""},{num:"4.6",task:"Pilot closeout readout + scale decision package (AGM/IC)",status:"Not Started",owner:"RA/Partner",start:"2026-06-21",end:"",dur:"Ongoing",output:"AGM/IC deck + validated savings + scale plan"},{num:"4.6u",task:"Pilot readout & scale decision (AGM/IC) · Oct 22, 2026",milestone:true}]}];
 
-const primePhases=[
-  {title:'Preferred Vendor Inventory & Current State Baseline',status:'Complete',dates:'Mar 16 – Apr 10, 2026 · 4 Weeks',tasks:[
-    {num:'1.1',task:'Compile master list of all current vendors with existing preferred pricing agreements',status:'Complete',owner:'RA',start:'2026-03-16',end:'2026-03-20',dur:'5d',output:'Vendor inventory spreadsheet with contract terms, pricing, expiry'},
-    {num:'1.2',task:'Categorize vendors by type (SaaS vs. Services) and functional area',status:'Complete',owner:'RA',start:'2026-03-23',end:'2026-03-27',dur:'5d',output:'Categorized vendor matrix aligned to one-pager structure'},
-    {num:'1.3',task:'Gather and centralize all existing pricing agreements into SharePoint',status:'Complete',owner:'RA',start:'2026-03-30',end:'2026-04-03',dur:'5d',output:'Centralized document repository with all current agreements'},
-    {num:'1.4',task:'Document current discount levels (% off list, volume tiers, bundled pricing) and key contract terms',status:'Complete',owner:'RA',start:'2026-04-06',end:'2026-04-10',dur:'5d',output:'Pricing detail log: discount %, effective dates, renewal terms'},
-    {num:'1u',task:'Current state vendor inventory and pricing baseline complete — One Slide + SharePoint docs · Apr 10, 2026',milestone:true},
-  ]},
-  {title:'Preferred Vendor Gap Analysis & One-Pager Content Design',status:'In Progress',dates:'Apr 13 – May 8, 2026 · 3 Weeks',tasks:[
-    {num:'2.1',task:"Define desired end-state vendor coverage: identify target vendors where Sunstone should have preferred pricing but doesn't",status:'In Progress',owner:'RA',start:'2026-04-13',end:'2026-04-17',dur:'5d',output:'Gap analysis: target vendor wish list with rationale + priority ranking'},
-    {num:'2.2',task:'Gather select CFO feedback (2–3) on draft desired end-state to gauge PortCo demand',status:'On Hold',owner:'RA',start:'2026-04-20',end:'2026-04-24',dur:'5d',output:'Future state vendor list refined with PortCo input'},
-    {num:'2.2u',task:'Future state preferred vendor inventory complete · Apr 24, 2026',milestone:true},
-    {num:'2.3',task:'Design one-pager content and layout: fields, categories, discount %, contact, renewal date',status:'Complete',owner:'RA',start:'2026-04-27',end:'2026-05-01',dur:'5d',output:'Draft one-pager template with agreed-upon fields and layout'},
-    {num:'2.4',task:'Align with Sean on categorization framework and prioritization criteria',status:'Complete',owner:'RA/SL',start:'2026-05-04',end:'2026-05-08',dur:'5d',output:'Approved taxonomy + content decisions documented'},
-    {num:'2u',task:'Gap analysis complete; one-pager template and content framework approved · May 8, 2026',milestone:true},
-  ]},
-  {title:'Preferred Vendor Outreach, Negotiation & Final One-Pager Delivery',status:'Not Started',dates:'May 11 – Jun 16, 2026 · 4 Weeks',tasks:[
-    {num:'3.1',task:'Initiate outreach to priority gap vendors (intro calls, term sheets)',status:'Not Started',owner:'RA',start:'2026-05-11',end:'2026-05-15',dur:'5d',output:'Outreach tracker with status, contact, and next steps per vendor'},
-    {num:'3.2',task:'Negotiate and finalize new preferred pricing terms; execute agreements where possible',status:'Not Started',owner:'RA',start:'2026-05-18',end:'2026-05-22',dur:'5d',output:'Signed or near-final preferred pricing agreements for new vendors'},
-    {num:'3.3',task:'Populate final one-pager with all confirmed preferred vendors, pricing details, and categories',status:'Not Started',owner:'RA',start:'2026-05-25',end:'2026-05-29',dur:'5d',output:'Draft final one-pager: complete, formatted, and ready for review'},
-    {num:'3.4',task:'POG presentation to partners; iterate as needed',status:'Not Started',owner:'RA/SL',start:'2026-06-01',end:'2026-06-05',dur:'5d',output:'Final approved one-pager distributed to portfolio'},
-    {num:'3.4u',task:'Partner sign-off · Jun 5, 2026',milestone:true},
-    {num:'3.5',task:'Distribute one-pager to portfolio companies; establish ongoing update and vendor-addition process',status:'Not Started',owner:'RA',start:'2026-06-05',end:'2026-06-09',dur:'5d',output:'Distribution confirmed + maintenance cadence defined'},
-    {num:'3.6',task:'Incorporate into POG/FinOps capability slides',status:'Not Started',owner:'RA',start:'2026-06-12',end:'2026-06-16',dur:'5d',output:''},
-    {num:'3u',task:'Sunstone Prime Program one-pager finalized, distributed to portfolio, and included in POG capability slides · Jun 16, 2026',milestone:true},
-  ]},
-];
+const primePhases=[{title:"Preferred Vendor Inventory & Current State Baseline",status:"Complete",dates:"Mar 16 – Apr 10, 2026 · 4 Weeks",tasks:[{num:"1.1",task:"Compile master list of all current vendors with existing preferred pricing agreements",status:"Complete",owner:"RA",start:"2026-03-16",end:"2026-03-20",dur:"5d",output:"Vendor inventory spreadsheet with contract terms, pricing, expiry"},{num:"1.2",task:"Categorize vendors by type (SaaS vs. Services) and functional area",status:"Complete",owner:"RA",start:"2026-03-23",end:"2026-03-27",dur:"5d",output:"Categorized vendor matrix aligned to one-pager structure"},{num:"1.3",task:"Gather and centralize all existing pricing agreements into SharePoint",status:"Complete",owner:"RA",start:"2026-03-30",end:"2026-04-03",dur:"5d",output:"Centralized document repository with all current agreements"},{num:"1.4",task:"Document current discount levels (% off list, volume tiers, bundled pricing) and key contract terms",status:"Complete",owner:"RA",start:"2026-04-06",end:"2026-04-10",dur:"5d",output:"Pricing detail log: discount %, effective dates, renewal terms"},{num:"1u",task:"Current state vendor inventory and pricing baseline complete — One Slide + SharePoint docs · Apr 10, 2026",milestone:true}]},{title:"Preferred Vendor Gap Analysis & One-Pager Content Design",status:"In Progress",dates:"Apr 13 – May 8, 2026 · 3 Weeks",tasks:[{num:"2.1",task:"Define desired end-state vendor coverage: identify target vendors where Sunstone should have preferred pricing but doesn't",status:"In Progress",owner:"RA",start:"2026-04-13",end:"2026-04-17",dur:"5d",output:"Gap analysis: target vendor wish list with rationale + priority ranking"},{num:"2.2",task:"Gather select CFO feedback (2–3) on draft desired end-state to gauge PortCo demand",status:"On Hold",owner:"RA",start:"2026-04-20",end:"2026-04-24",dur:"5d",output:"Future state vendor list refined with PortCo input"},{num:"2.2u",task:"Future state preferred vendor inventory complete · Apr 24, 2026",milestone:true},{num:"2.3",task:"Design one-pager content and layout: fields, categories, discount %, contact, renewal date",status:"Complete",owner:"RA",start:"2026-04-27",end:"2026-05-01",dur:"5d",output:"Draft one-pager template with agreed-upon fields and layout"},{num:"2.4",task:"Align with Sean on categorization framework and prioritization criteria",status:"Complete",owner:"RA",start:"2026-04-27",end:"2026-05-01",dur:"5d",output:"Approved taxonomy + content decisions documented"},{num:"2u",task:"Gap analysis complete; one-pager template and content framework approved · May 8, 2026",milestone:true}]},{title:"Preferred Vendor Outreach, Negotiation & Final One-Pager Delivery",status:"Not Started",dates:"May 11 – Jun 16, 2026 · 4 Weeks",tasks:[{num:"3.1",task:"Initiate outreach to priority gap vendors (intro calls, term sheets)",status:"Not Started",owner:"RA",start:"2026-05-11",end:"2026-05-15",dur:"5d",output:"Outreach tracker with status, contact, and next steps per vendor"},{num:"3.2",task:"Negotiate and finalize new preferred pricing terms; execute agreements where possible",status:"Not Started",owner:"RA",start:"2026-05-18",end:"2026-05-22",dur:"5d",output:"Signed or near-final preferred pricing agreements for new vendors"},{num:"3.3",task:"Populate final one-pager with all confirmed preferred vendors, pricing details, and categories",status:"Not Started",owner:"RA",start:"2026-05-25",end:"2026-05-29",dur:"5d",output:"Draft final one-pager: complete, formatted, and ready for review"},{num:"3.4",task:"POG presentation to partners; iterate as needed",status:"Not Started",owner:"RA/SL",start:"2026-06-01",end:"2026-06-05",dur:"5d",output:"Final approved one-pager distributed to portfolio"},{num:"3.4u",task:"Partner sign-off · Jun 5, 2026",milestone:true},{num:"3.5",task:"Distribute one-pager to portfolio companies; establish ongoing update and vendor-addition process",status:"Not Started",owner:"RA",start:"2026-06-05",end:"2026-06-09",dur:"5d",output:"Distribution confirmed + maintenance cadence defined"},{num:"3.6",task:"Incorporate into POG/FinOps capability slides",status:"Not Started",owner:"RA",start:"2026-06-05",end:"2026-06-09",dur:"5d",output:""},{num:"3u",task:"Sunstone Prime Program one-pager finalized, distributed to portfolio, and included in POG capability slides · Jun 16, 2026",milestone:true}]}];
 
 
-const budgetPhases=[
-  {title:'Pre-Budget Preparation & Template Design',status:'Not Started',dates:'Sep 2026 · ~3 Weeks',tasks:[
-    {num:'1.1',task:'Review prior-year budget process; incorporate lessons learned from 2026 cycle',status:'Not Started',owner:'RA',start:'2026-09-07',end:'2026-09-11',dur:'5d',output:'Process improvement notes + updated timeline'},
-    {num:'1.2',task:'Build/refresh standardized 2027 budget template (P&L, headcount, capex) aligned with portfolio reporting standards',status:'Not Started',owner:'RA',start:'2026-09-14',end:'2026-09-18',dur:'5d',output:'2027 Budget Template v1 + guidance doc for CFOs'},
-    {num:'1.3',task:'Align with partners on key assumptions, growth targets, and strategic priorities to inform budget guidance',status:'Not Started',owner:'RA/SL',start:'2026-09-21',end:'2026-09-25',dur:'5d',output:'Partner-approved budget guidance letter for CFOs'},
-    {num:'1u',task:'Template and guidance approved; ready for CFO distribution',milestone:true},
-  ]},
-  {title:'Portfolio Company Budget Submissions',status:'Not Started',dates:'Oct 2026 · ~4 Weeks',tasks:[
-    {num:'2.1',task:'Distribute templates + guidance to all PortCo CFOs; kick off formal budget process',status:'Not Started',owner:'RA',start:'2026-10-05',end:'2026-10-07',dur:'3d',output:'Templates distributed + acknowledgement received from all CFOs'},
-    {num:'2.2',task:'Hold budget kickoff calls with each PortCo CFO; answer Q&A; set internal deadlines',status:'Not Started',owner:'RA',start:'2026-10-05',end:'2026-10-09',dur:'1 wk',output:'Meeting notes + per-PortCo submission deadlines confirmed'},
-    {num:'2.3',task:'Track submissions; follow up with outstanding CFOs',status:'Not Started',owner:'RA',start:'2026-10-12',end:'2026-10-23',dur:'2 wks',output:'Submission tracker (all PortCos)'},
-    {num:'2.4',task:'QA all received budgets: format compliance, key ratio checks, assumptions review',status:'Not Started',owner:'RA',start:'2026-10-19',end:'2026-10-30',dur:'2 wks',output:'QA sign-off checklist per PortCo'},
-    {num:'2u',task:'All PortCo budgets received and QA\'d',milestone:true},
-  ]},
-  {title:'Portfolio Roll-Up, Review & Partner Approval',status:'Not Started',dates:'Nov 2026 · ~3 Weeks',tasks:[
-    {num:'3.1',task:'Consolidate all PortCo budgets into portfolio roll-up summary (revenue, EBITDA, headcount, capex)',status:'Not Started',owner:'RA',start:'2026-11-02',end:'2026-11-06',dur:'5d',output:'Portfolio 2027 Budget Roll-Up (consolidated view)'},
-    {num:'3.2',task:'Flag outliers, concerns, and items requiring partner discussion',status:'Not Started',owner:'RA',start:'2026-11-02',end:'2026-11-06',dur:'5d',output:'Exceptions memo for partners'},
-    {num:'3.3',task:'Partner budget review meetings; challenge sessions as needed',status:'Not Started',owner:'RA/SL',start:'2026-11-09',end:'2026-11-13',dur:'1 wk',output:'Partner meeting notes + approved/revised budgets'},
-    {num:'3.4',task:'Finalize and distribute approved 2027 budgets; load into portfolio reporting infrastructure',status:'Not Started',owner:'RA',start:'2026-11-16',end:'2026-11-20',dur:'5d',output:'2027 approved budgets filed in SharePoint + loaded into reporting system'},
-    {num:'3u',task:'2027 Portfolio Budget approved and loaded — full-year planning baseline established for all portfolio companies',milestone:true},
-  ]},
-];
+const budgetPhases=[{title:"Pre-Budget Preparation & Template Design",status:"Not Started",dates:"Sep 2026 · ~3 Weeks",tasks:[{num:"1.1",task:"Review prior-year budget process; incorporate lessons learned from 2026 cycle",status:"Not Started",owner:"RA",start:"2026-09-07",end:"2026-09-11",dur:"5d",output:"Process improvement notes + updated timeline"},{num:"1.2",task:"Build/refresh standardized 2027 budget template (P&L, headcount, capex) aligned with portfolio reporting standards",status:"Not Started",owner:"RA",start:"2026-09-14",end:"2026-09-18",dur:"5d",output:"2027 Budget Template v1 + guidance doc for CFOs"},{num:"1.3",task:"Align with partners on key assumptions, growth targets, and strategic priorities to inform budget guidance",status:"Not Started",owner:"RA/SL",start:"2026-09-21",end:"2026-09-25",dur:"5d",output:"Partner-approved budget guidance letter for CFOs"},{num:"1u",task:"Template and guidance approved; ready for CFO distribution",milestone:true}]},{title:"Portfolio Company Budget Submissions",status:"Not Started",dates:"Oct 2026 · ~4 Weeks",tasks:[{num:"2.1",task:"Distribute templates + guidance to all PortCo CFOs; kick off formal budget process",status:"Not Started",owner:"RA",start:"2026-10-05",end:"2026-10-07",dur:"3d",output:"Templates distributed + acknowledgement received from all CFOs"},{num:"2.2",task:"Hold budget kickoff calls with each PortCo CFO; answer Q&A; set internal deadlines",status:"Not Started",owner:"RA",start:"2026-10-05",end:"2026-10-09",dur:"1 wk",output:"Meeting notes + per-PortCo submission deadlines confirmed"},{num:"2.3",task:"Track submissions; follow up with outstanding CFOs",status:"Not Started",owner:"RA",start:"2026-10-12",end:"2026-10-23",dur:"2 wks",output:"Submission tracker (all PortCos)"},{num:"2.4",task:"QA all received budgets: format compliance, key ratio checks, assumptions review",status:"Not Started",owner:"RA",start:"2026-10-19",end:"2026-10-30",dur:"2 wks",output:"QA sign-off checklist per PortCo"},{num:"2u",task:"All PortCo budgets received and QA'd",milestone:true}]},{title:"Portfolio Roll-Up, Review & Partner Approval",status:"Not Started",dates:"Nov 2026 · ~3 Weeks",tasks:[{num:"3.1",task:"Consolidate all PortCo budgets into portfolio roll-up summary (revenue, EBITDA, headcount, capex)",status:"Not Started",owner:"RA",start:"2026-11-02",end:"2026-11-06",dur:"5d",output:"Portfolio 2027 Budget Roll-Up (consolidated view)"},{num:"3.2",task:"Flag outliers, concerns, and items requiring partner discussion",status:"Not Started",owner:"RA",start:"2026-11-02",end:"2026-11-06",dur:"5d",output:"Exceptions memo for partners"},{num:"3.3",task:"Partner budget review meetings; challenge sessions as needed",status:"Not Started",owner:"RA/SL",start:"2026-11-09",end:"2026-11-13",dur:"1 wk",output:"Partner meeting notes + approved/revised budgets"},{num:"3.4",task:"Finalize and distribute approved 2027 budgets; load into portfolio reporting infrastructure",status:"Not Started",owner:"RA",start:"2026-11-16",end:"2026-11-20",dur:"5d",output:"2027 approved budgets filed in SharePoint + loaded into reporting system"},{num:"3u",task:"2027 Portfolio Budget approved and loaded — full-year planning baseline established for all portfolio companies",milestone:true}]}];
 
 // ═══════════════════════════════════════════════════════════════
 // TABS
