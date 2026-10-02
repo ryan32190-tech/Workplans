@@ -277,7 +277,6 @@ input,select,textarea,button{font-family:var(--fb);}
     <button class="tb on" onclick="showTab('dashboard')">Dashboard</button>
     <button class="tb" onclick="showTab('cost-out')">Cost Optimization</button>
     <button class="tb" onclick="showTab('prime')">Prime Program</button>
-    <button class="tb" onclick="showTab('ai-close')">AI Close Challenge</button>
     <button class="tb" onclick="showTab('budget')">2027 Budget</button>
     <button class="tb" onclick="showTab('full-year')">Full Year</button>
   </div>
@@ -461,23 +460,6 @@ input,select,textarea,button{font-family:var(--fb);}
 <!-- ══════════════════════════════════════════════════════════════
   AI CLOSE CHALLENGE TAB
 ══════════════════════════════════════════════════════════════ -->
-<div id="tab-ai-close" class="section-hidden">
-  <div class="plan-head">
-    <h2>AI Close Acceleration Challenge</h2>
-    <div class="plan-meta"><span><strong>PM:</strong> Ryan Andre</span><span><strong>Target Start:</strong> Jun 2026</span><span><strong>Category:</strong> Finance Modernization</span><span><strong>Priority:</strong> A</span></div>
-  </div>
-  <div class="plan-status-bar">
-    <span class="psb-label">Program Status:</span>
-    <select class="st-sel" id="ai-status-sel" onchange="syncProgStatus('ai-close',this.value);styleStatusSel(this)">
-      <option selected>Not Started</option><option>In Progress</option><option>On Hold</option><option>Complete</option><option>Blocked</option>
-    </select>
-    <span class="psb-last">Last updated: <span id="ai-last-upd">—</span></span>
-  </div>
-  <div class="wip-banner">⚠️ <strong>Work in Progress</strong> — Placeholder workplan. Phases and timelines are illustrative and will be refined as the initiative scopes out.</div>
-  <div id="ai-phase-container"></div>
-  <div class="log-section"><div class="log-title">Notes & Activity Log</div><div id="ai-log-list"></div><div class="log-add"><input class="log-input" id="ai-log-input" placeholder="Add note…" onkeydown="if(event.key==='Enter')addLog('ai')"><button class="log-btn" onclick="addLog('ai')">Add</button></div></div>
-</div>
-
 <!-- ══════════════════════════════════════════════════════════════
   2027 BUDGET TAB
 ══════════════════════════════════════════════════════════════ -->
@@ -507,7 +489,7 @@ input,select,textarea,button{font-family:var(--fb);}
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════
 const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const CATS = ['Cost Optimization & M&A Integration','Finance Modernization','Performance Monitoring','Post-Close Onboarding','Sunstone Portfolio Reporting','Other Internal'];
+const CATS = ['Cost Optimization & M&A Integration','Finance Modernization','Performance Monitoring','Post-Close Onboarding','Fractional Leadership','Sunstone Portfolio Reporting','Other Internal'];
 const OWNERS = ['RA','SL','RA/SL','RA/Partner','RA/AGMAJ','PortCo CFO','TBD'];
 const STATUS_OPTS = ['Not Started','In Progress','On Hold','Complete','Blocked','Placeholder'];
 
@@ -517,8 +499,7 @@ const STATUS_OPTS = ['Not Started','In Progress','On Hold','Complete','Blocked',
 const portfolioPrograms = [
   {id:'cost-out',num:1,name:'Cost Optimization',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Visibility',alloc:[0,0.05,0.3,0.4,0.5,0.5,0.5,0.3,0.2,0.05,0.1,0.1],tab:'cost-out'},
   {id:'prime',num:2,name:'Sunstone Prime Program (Preferred Vendors)',cat:'Cost Optimization & M&A Integration',co:'Portfolio-Wide',pri:'A',status:'In Progress',drivers:'Margin Expansion, Reduced Deal Team Time',alloc:[0,0,0.1,0.15,0.1,0.1,0.1,0.05,0.05,0,0.05,0.05],tab:'prime'},
-  {id:'ai-close',num:3,name:'AI Close Acceleration Challenge',cat:'Finance Modernization',co:'Portfolio-Wide',pri:'A',status:'Placeholder',drivers:'Visibility, Exit Readiness, Margin Expansion',alloc:[0,0,0,0,0,0,0,0,0.05,0.15,0.1,0.05],tab:'ai-close'},
-  {id:'budget',num:4,name:'2027 Budget Process',cat:'Performance Monitoring',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Risk Management, Exit Readiness',alloc:[0,0,0,0,0,0,0,0.2,0.3,0.05,0.2,0.2],tab:'budget'},
+  {id:'budget',num:3,name:'2027 Budget Process',cat:'Performance Monitoring',co:'Portfolio-Wide',pri:'A',status:'Not Started',drivers:'Visibility, Risk Management, Exit Readiness',alloc:[0,0,0,0,0,0,0,0.2,0.3,0.05,0.2,0.2],tab:'budget'},
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -526,6 +507,7 @@ const portfolioPrograms = [
 // ═══════════════════════════════════════════════════════════════
 let otherRows = [
   {section:'PORTCO ENGAGEMENTS'},
+  {id:'rcfo',num:4,name:'Interim CFO',cat:'Fractional Leadership',co:'TBD',pri:'A',status:'Placeholder',alloc:[0,0,0,0,0,0,0,0,0,0,0,0]},
   {id:'r5',num:5,name:'NetSuite Implementation',cat:'Finance Modernization',co:'TelliHealth',pri:'A',status:'In Progress',alloc:[0.4,0.3,0.1,0.05,0.05,0.05,0.05,0,0,0,0,0]},
   {id:'r6',num:6,name:'Back Office Staffing (Controller)',cat:'Post-Close Onboarding',co:'TelliHealth',pri:'C',status:'Complete',alloc:[0,0.1,0.1,0.1,0.05,0,0,0,0,0,0,0]},
   {id:'r7',num:7,name:'Monthly Reporting Standup',cat:'Post-Close Onboarding',co:'Clearwater',pri:'A',status:'Complete',alloc:[0.05,0.05,0.05,0,0,0,0,0,0,0,0,0]},
@@ -629,11 +611,11 @@ function syncProgStatus(id, val){
   const p = portfolioPrograms.find(x=>x.id===id);
   if(p){ p.status=val; }
   // sync sibling selects
-  const selIds={'cost-out':'cost-status-sel','prime':'prime-status-sel','ai-close':'ai-status-sel','budget':'budget-status-sel'};
+  const selIds={'cost-out':'cost-status-sel','prime':'prime-status-sel','budget':'budget-status-sel'};
   Object.entries(selIds).forEach(([k,sid])=>{ if(k===id){ const el=document.getElementById(sid); if(el){el.value=val;styleStatusSel(el);} }});
   // update last upd
   const updEl = document.getElementById(id.split('-')[0]+'-last-upd')||document.getElementById(id.replace('-close','').replace('-out','')+'-last-upd');
-  const allUpd=['cost-last-upd','prime-last-upd','ai-last-upd','budget-last-upd'];
+  const allUpd=['cost-last-upd','prime-last-upd','budget-last-upd'];
   allUpd.forEach(uid=>{
     if(uid.startsWith(id.split('-')[0])||uid.startsWith(id.replace('-out','').replace('-close',''))){
       const e=document.getElementById(uid); if(e) e.textContent=nowStr();
@@ -1253,28 +1235,6 @@ const primePhases=[
   ]},
 ];
 
-const aiPhases=[
-  {title:'Scoping & Needs Assessment',status:'Not Started',dates:'TBD · ~4 Weeks',tasks:[
-    {num:'1.1',task:'Assess current financial close process at pilot PortCos (TelliHealth, Clearwater)',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Current-state close timeline by PortCo'},
-    {num:'1.2',task:'Identify key bottlenecks and AI-addressable steps in close cycle',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Bottleneck map + prioritized AI use-case list'},
-    {num:'1.3',task:'Benchmark close cycle time vs. industry peers',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Benchmark summary + target close-day goals'},
-    {num:'1.4',task:'Survey AI tooling landscape: ERP AI modules, automation tools, close management platforms',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Short list of 3–5 tools for pilot consideration'},
-    {num:'1u',task:'Scoping complete — baseline established, AI tool shortlist approved',milestone:true},
-  ]},
-  {title:'Pilot Design & Internal Alignment',status:'Not Started',dates:'TBD · ~3 Weeks',tasks:[
-    {num:'2.1',task:'Define pilot success criteria (target close day reduction, error rate, CFO bandwidth saved)',status:'Not Started',owner:'RA/SL',start:'',end:'',dur:'',output:'Pilot scorecard with measurable KPIs'},
-    {num:'2.2',task:'Select pilot PortCos and align CFOs on participation and data sharing',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Signed-off pilot cohort + CFO intro calls complete'},
-    {num:'2.3',task:'POG presentation to partners for sign-off on approach and budget',status:'Not Started',owner:'RA/SL',start:'',end:'',dur:'',output:'Partner approval + allocated budget'},
-    {num:'2u',task:'Pilot approved and cohort confirmed',milestone:true},
-  ]},
-  {title:'Pilot Execution & Measurement',status:'Not Started',dates:'TBD · ~8 Weeks',tasks:[
-    {num:'3.1',task:'Implement AI tooling at pilot PortCos; train finance teams',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'Tool live at pilot sites + training complete'},
-    {num:'3.2',task:'Run 2 close cycles with AI-assisted process; track vs. baseline',status:'Not Started',owner:'RA/Partner',start:'',end:'',dur:'',output:'Before/after close-day data + error rate delta'},
-    {num:'3.3',task:'Collect CFO feedback; refine approach as needed',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'CFO survey results + refined playbook'},
-    {num:'3.4',task:'Build readout deck for Sunstone IC — results, learnings, scale recommendation',status:'Not Started',owner:'RA',start:'',end:'',dur:'',output:'IC-ready results deck + scale/no-scale recommendation'},
-    {num:'3u',task:'AI Close Challenge pilot readout to IC — Go/No-Go on portfolio-wide rollout',milestone:true},
-  ]},
-];
 
 const budgetPhases=[
   {title:'Pre-Budget Preparation & Template Design',status:'Not Started',dates:'Sep 2026 · ~3 Weeks',tasks:[
@@ -1302,14 +1262,14 @@ const budgetPhases=[
 // ═══════════════════════════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════════════════════════
-const TAB_IDS=['dashboard','full-year','cost-out','prime','ai-close','budget'];
+const TAB_IDS=['dashboard','full-year','cost-out','prime','budget'];
 function showTab(name){
   TAB_IDS.forEach(id=>{
     const el=document.getElementById('tab-'+id);
     if(el) el.classList.toggle('section-hidden',id!==name);
   });
   document.querySelectorAll('.tb').forEach(b=>{
-    const matches=(name==='dashboard'&&b.textContent==='Dashboard')||(name==='full-year'&&b.textContent==='Full Year')||(name==='cost-out'&&b.textContent==='Cost Optimization')||(name==='prime'&&b.textContent==='Prime Program')||(name==='ai-close'&&b.textContent==='AI Close Challenge')||(name==='budget'&&b.textContent==='2027 Budget');
+    const matches=(name==='dashboard'&&b.textContent==='Dashboard')||(name==='full-year'&&b.textContent==='Full Year')||(name==='cost-out'&&b.textContent==='Cost Optimization')||(name==='prime'&&b.textContent==='Prime Program')||(name==='budget'&&b.textContent==='2027 Budget');
     b.classList.toggle('on',matches);
   });
   if(name==='full-year') renderFY();
@@ -1346,7 +1306,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   // render phases
   renderPhases('cost-phase-container',costPhases);
   renderPhases('prime-phase-container',primePhases);
-  renderPhases('ai-phase-container',aiPhases);
   renderPhases('budget-phase-container',budgetPhases);
 
   // style all workplan status selects
@@ -1394,7 +1353,6 @@ async function exportSnapshot(){
     }
     capturePhases('cost-phase-container',costPhases);
     capturePhases('prime-phase-container',primePhases);
-    capturePhases('ai-phase-container',aiPhases);
     capturePhases('budget-phase-container',budgetPhases);
 
     // 2. Fetch this page's own clean source file
@@ -1416,7 +1374,6 @@ async function exportSnapshot(){
     html = replaceConst(html, 'otherRows', 'let',   serializeArr(otherRows));
     html = replaceConst(html, 'costPhases', 'const', serializeArr(costPhases));
     html = replaceConst(html, 'primePhases','const', serializeArr(primePhases));
-    html = replaceConst(html, 'aiPhases',   'const', serializeArr(aiPhases));
     html = replaceConst(html, 'budgetPhases','const',serializeArr(budgetPhases));
 
     // 5. Replace logs object
